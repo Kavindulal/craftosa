@@ -19,6 +19,7 @@ export default function SellerSettingsPage() {
   const router = useRouter();
   const [form, setForm] = useState({ shopName: "", bio: "", craftTypes: "", city: "" });
   const [status, setStatus] = useState("");
+  const [hasApplication, setHasApplication] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -50,7 +51,8 @@ export default function SellerSettingsPage() {
           return;
         }
         if (response.status === 404) {
-          setError("No seller application was found for this account. Complete the seller application before editing shop details.");
+          setHasApplication(false);
+          setMessage("Set up your shop by completing the details below. Your application will be submitted for review.");
           return;
         }
         if (!response.ok) throw new Error(data.message || "Could not load shop details.");
@@ -62,6 +64,7 @@ export default function SellerSettingsPage() {
           city: shop.city || "",
         });
         setStatus(shop.status || "");
+        setHasApplication(true);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Could not load shop details.");
       } finally {
@@ -86,8 +89,10 @@ export default function SellerSettingsPage() {
       return;
     }
     try {
-      const response = await fetch(`${API_URL}/sellers/me/shop`, {
-        method: "PATCH",
+      const response = await fetch(
+        hasApplication ? `${API_URL}/sellers/me/shop` : `${API_URL}/sellers/apply`,
+        {
+        method: hasApplication ? "PATCH" : "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -111,8 +116,11 @@ export default function SellerSettingsPage() {
         craftTypes: Array.isArray(shop.craftTypes) ? shop.craftTypes.join(", ") : "",
         city: shop.city || "",
       });
-      setStatus(shop.status || status);
-      setMessage("Your shop details have been saved successfully.");
+      setStatus(shop.status || (hasApplication ? status : "pending"));
+      setHasApplication(true);
+      setMessage(hasApplication
+        ? "Your shop details have been saved successfully."
+        : "Your seller application has been submitted successfully. It is now pending review.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not save shop details.");
     } finally {
@@ -136,7 +144,7 @@ export default function SellerSettingsPage() {
             <>
               {error && <div role="alert" className="mb-5 rounded-xl border border-[#efd8c8] bg-[#fff4eb] p-4 text-sm text-[#80452f]">{error}</div>}
               {message && <div role="status" className="mb-5 rounded-xl border border-[#d4e8d3] bg-[#f1f8ef] p-4 text-sm text-[#315f36]">{message}</div>}
-              {!error && <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
                   <label htmlFor="shopName" className="text-sm font-semibold">Shop name</label>
                   <input id="shopName" required minLength={2} maxLength={100} value={form.shopName} onChange={(e) => updateField("shopName", e.target.value)} className={inputClass} placeholder="e.g. Test Artisan Studio" />
@@ -159,7 +167,7 @@ export default function SellerSettingsPage() {
                   <button type="button" onClick={() => router.push("/seller")} className="rounded-xl border border-[#e8dcd1] px-5 py-3 text-sm font-semibold text-[#785341] hover:bg-[#f8f1e9]">Cancel</button>
                   <button type="submit" disabled={saving} className="rounded-xl bg-[#8b4c35] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#713b29] disabled:opacity-60">{saving ? "Saving..." : "Save shop details"}</button>
                 </div>
-              </form>}
+              </form>
             </>
           )}
         </section>
