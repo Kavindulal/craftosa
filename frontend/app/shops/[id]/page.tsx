@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -19,9 +18,8 @@ type PublicShop = {
   status: string;
 };
 
-export default function PublicShopPage() {
-  const params = useParams<{ id: string }>();
-  const userId = params.id;
+export default function PublicShopPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: userId } = use(params);
   const [shop, setShop] = useState<PublicShop | null>(null);
   const [products, setProducts] = useState<ShopProduct[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
