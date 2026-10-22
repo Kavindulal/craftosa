@@ -7,6 +7,8 @@ import Link from "next/link";
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
+type SignedInUser = { name?: string; email?: string; role?: string };
+
 type Product = {
   _id?: string;
   id?: string;
@@ -45,6 +47,24 @@ export default function MarketplacePage() {
   const [category, setCategory] = useState("All Products");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [signedInUser, setSignedInUser] = useState<SignedInUser | null>(null);
+
+  useEffect(() => {
+    const storedUser = sessionStorage.getItem("craftosa_user");
+    const token = sessionStorage.getItem("craftosa_access_token");
+
+    if (!token || !storedUser) {
+      setSignedInUser(null);
+      return;
+    }
+
+    try {
+      setSignedInUser(JSON.parse(storedUser) as SignedInUser);
+    } catch {
+      sessionStorage.removeItem("craftosa_user");
+      setSignedInUser(null);
+    }
+  }, []);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -140,18 +160,58 @@ export default function MarketplacePage() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <Link
-              href="/login"
-              className="rounded-xl px-3 py-2 text-sm font-medium hover:bg-[#f8eee5]"
-            >
-              Sign in
-            </Link>
-            <Link
-              href="/login"
-              className="hidden rounded-xl bg-[#8b4c35] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#713b29] sm:inline-flex"
-            >
-              Join Craftosa
-            </Link>
+            {signedInUser ? (
+              <>
+                {signedInUser.role === "seller" ? (
+                  <Link
+                    href="/seller"
+                    className="rounded-xl px-3 py-2 text-sm font-medium hover:bg-[#f8eee5]"
+                  >
+                    Seller Dashboard
+                  </Link>
+                ) : signedInUser.role === "admin" ? (
+                  <Link
+                    href="/admin"
+                    className="rounded-xl px-3 py-2 text-sm font-medium hover:bg-[#f8eee5]"
+                  >
+                    Admin Dashboard
+                  </Link>
+                ) : (
+                  <Link
+                    href="/profile"
+                    className="rounded-xl px-3 py-2 text-sm font-medium hover:bg-[#f8eee5]"
+                  >
+                    My Account
+                  </Link>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    sessionStorage.removeItem("craftosa_access_token");
+                    sessionStorage.removeItem("craftosa_user");
+                    setSignedInUser(null);
+                  }}
+                  className="rounded-xl bg-[#8b4c35] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#713b29]"
+                >
+                  Sign out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="rounded-xl px-3 py-2 text-sm font-medium hover:bg-[#f8eee5]"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/login"
+                  className="hidden rounded-xl bg-[#8b4c35] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#713b29] sm:inline-flex"
+                >
+                  Join Craftosa
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
