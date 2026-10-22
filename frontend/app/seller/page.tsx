@@ -168,12 +168,20 @@ export default function SellerDashboard() {
               )}
             </div>
 
-            <button
-              onClick={handleLogout}
-              className="shrink-0 rounded-xl border border-[#e8dcd1] px-4 py-2.5 text-sm font-medium text-[#785341] transition hover:bg-[#f8f1e9]"
-            >
-              Sign out
-            </button>
+            <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+              <Link
+                href="/seller/settings"
+                className="rounded-xl border border-[#e8dcd1] px-4 py-2.5 text-sm font-medium text-[#785341] transition hover:bg-[#f8f1e9]"
+              >
+                My Profile
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="rounded-xl border border-[#e8dcd1] px-4 py-2.5 text-sm font-medium text-[#785341] transition hover:bg-[#f8f1e9]"
+              >
+                Sign out
+              </button>
+            </div>
           </header>
 
           <div className="mx-auto max-w-7xl space-y-8 p-5 sm:p-8 lg:p-10">
