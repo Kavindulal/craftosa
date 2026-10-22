@@ -1,7 +1,7 @@
-
 import {
   ConflictException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -14,6 +14,7 @@ import {
   UserDocument,
   UserRole,
 } from '../users/user.schema';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -110,6 +111,87 @@ export class AuthService {
         name: user.name,
         email: user.email,
         role: user.role,
+      },
+    };
+  }
+
+  // GET /auth/account - return the current authenticated user's saved profile.
+  async getAccount(userId: string) {
+    const user = await this.userModel
+      .findById(userId)
+      .select('-password')
+      .lean()
+      .exec();
+
+    if (!user) {
+      throw new NotFoundException('User account was not found');
+    }
+
+    return {
+      message: 'Profile retrieved successfully',
+      user: {
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        phone: user.phone ?? '',
+        address: user.address ?? '',
+        city: user.city ?? '',
+        postalCode: user.postalCode ?? '',
+      },
+    };
+  }
+
+  // PATCH /auth/profile - update only editable fields for the current user.
+  async updateAccount(userId: string, data: UpdateProfileDto) {
+    const updates: Partial<UpdateProfileDto> = {};
+
+    if (data.name !== undefined) {
+      updates.name = data.name.trim();
+    }
+    if (data.email !== undefined) {
+      const email = data.email.trim().toLowerCase();
+      const existingUser = await this.userModel
+        .findOne({ email, _id: { $ne: userId } })
+        .exec();
+
+      if (existingUser) {
+        throw new ConflictException(
+          'An account with this email already exists',
+        );
+      }
+      updates.email = email;
+    }
+    if (data.phone !== undefined) updates.phone = data.phone.trim();
+    if (data.address !== undefined) updates.address = data.address.trim();
+    if (data.city !== undefined) updates.city = data.city.trim();
+    if (data.postalCode !== undefined) {
+      updates.postalCode = data.postalCode.trim();
+    }
+
+    const user = await this.userModel
+      .findByIdAndUpdate(userId, { $set: updates }, {
+        new: true,
+        runValidators: true,
+      })
+      .select('-password')
+      .exec();
+
+    if (!user) {
+      throw new NotFoundException('User account was not found');
+    }
+
+    return {
+      message: 'Profile updated successfully',
+      user: {
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        phone: user.phone ?? '',
+        address: user.address ?? '',
+        city: user.city ?? '',
+        postalCode: user.postalCode ?? '',
       },
     };
   }
