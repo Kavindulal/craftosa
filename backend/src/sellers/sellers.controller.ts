@@ -15,6 +15,7 @@ import { Request } from 'express';
 import { SellersService } from './sellers.service';
 import { ApplySellerDto } from './dto/apply-seller.dto';
 import { ReviewSellerDto } from './dto/review-seller.dto';
+import { UpdateShopDto } from './dto/update-shop.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -53,6 +54,16 @@ export class SellersController {
     return this.sellersService.getMyApplication(
       req.user.userId,
     );
+  }
+
+  @Patch('me/shop')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('seller')
+  updateMyShop(
+    @Req() req: AuthenticatedRequest,
+    @Body() dto: UpdateShopDto,
+  ) {
+    return this.sellersService.updateMyShop(req.user.userId, dto);
   }
 
   @Get()
