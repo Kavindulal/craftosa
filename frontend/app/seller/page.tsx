@@ -11,7 +11,7 @@ const API_URL =
 const menuItems = [
   { icon: "⌂", label: "Dashboard", href: "/seller" },
   { icon: "▦", label: "My Products", href: "/seller/products" },
-  { icon: "▤", label: "Orders", href: null },
+  { icon: "▤", label: "Orders", href: "/seller/orders" },
   { icon: "✉", label: "Custom Requests", href: null },
   { icon: "⚙", label: "Shop Settings", href: "/seller/settings" },
 ];
