@@ -156,6 +156,7 @@ export default function ProfilePage() {
     <main className="min-h-screen bg-[#f8f5ef] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
         <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
+          <Link href="/my-orders" className="rounded-xl border border-[#e7d9ce] px-4 py-2 text-sm font-medium text-[#8b4c35] hover:bg-white">My Orders</Link>
           <Link href="/" className="inline-flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#8b4c35] text-lg font-bold text-white">C</span>
             <span className="text-2xl font-semibold tracking-tight text-[#34251e]">
