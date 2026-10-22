@@ -13,7 +13,7 @@ const menuItems = [
   { icon: "▦", label: "My Products", href: "/seller/products" },
   { icon: "▤", label: "Orders", href: null },
   { icon: "✉", label: "Custom Requests", href: null },
-  { icon: "⚙", label: "Shop Settings", href: null },
+  { icon: "⚙", label: "Shop Settings", href: "/seller/settings" },
 ];
 
 type SellerUser = {
