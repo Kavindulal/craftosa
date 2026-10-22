@@ -64,8 +64,14 @@ export class SellersService {
 
   // GET /sellers/me
   async getMyApplication(userId: string) {
+    if (!Types.ObjectId.isValid(userId)) {
+      throw new BadRequestException('Invalid user ID');
+    }
+
+    // The Seller schema stores the account reference as an ObjectId.
+    // Query with the same type so existing applications are found reliably.
     const seller = await this.sellerModel
-      .findOne({ user: userId })
+      .findOne({ user: new Types.ObjectId(userId) })
       .populate('user', 'name email role')
       .exec();
 
