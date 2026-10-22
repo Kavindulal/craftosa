@@ -1,9 +1,8 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
@@ -27,9 +26,8 @@ type Product = {
 const fallbackImage =
   "https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?auto=format&fit=crop&w=900&q=80";
 
-export default function ProductDetailsPage() {
-  const params = useParams<{ id: string }>();
-  const productId = params.id;
+export default function ProductDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: productId } = use(params);
 
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
