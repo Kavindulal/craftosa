@@ -62,6 +62,39 @@ export class SellersService {
     };
   }
 
+  // PUBLIC: Return approved shop information for customer-facing pages.
+  async getPublicShop(userId: string) {
+    if (!Types.ObjectId.isValid(userId)) {
+      throw new BadRequestException('Invalid seller ID');
+    }
+
+    const seller = await this.sellerModel
+      .findOne({
+        user: new Types.ObjectId(userId),
+        status: SellerStatus.APPROVED,
+      })
+      .select('user shopName bio craftTypes city status createdAt')
+      .populate('user', 'name')
+      .lean()
+      .exec();
+
+    if (!seller) {
+      throw new NotFoundException('This shop is not available publicly');
+    }
+
+    return {
+      id: seller._id.toString(),
+      userId: (seller.user as any)?._id?.toString?.() ?? userId,
+      sellerName: (seller.user as any)?.name ?? '',
+      shopName: seller.shopName,
+      bio: seller.bio,
+      craftTypes: seller.craftTypes,
+      city: seller.city,
+      status: seller.status,
+      createdAt: seller.createdAt,
+    };
+  }
+
   // GET /sellers/me
   async getMyApplication(userId: string) {
     if (!Types.ObjectId.isValid(userId)) {
