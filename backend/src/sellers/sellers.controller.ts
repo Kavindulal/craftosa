@@ -47,6 +47,11 @@ export class SellersController {
     );
   }
 
+  @Get('public/:userId')
+  getPublicShop(@Param('userId') userId: string) {
+    return this.sellersService.getPublicShop(userId);
+  }
+
   @Get('me')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('seller')
