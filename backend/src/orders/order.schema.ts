@@ -26,5 +26,8 @@ export class Order {
   @Prop({ required: true, trim: true }) city!: string;
   @Prop({ required: true, default: 'cash_on_delivery' }) paymentMethod!: string;
   @Prop({ required: true, default: 'pending' }) status!: string;
+
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 export const OrderSchema = SchemaFactory.createForClass(Order);
