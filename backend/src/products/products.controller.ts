@@ -1,0 +1,122 @@
+
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { Request } from 'express';
+
+import { ProductsService } from './products.service';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+
+interface AuthenticatedRequest extends Request {
+  user: {
+    userId: string;
+    email: string;
+    role: string;
+  };
+}
+
+@Controller('products')
+export class ProductsController {
+  constructor(
+    private readonly productsService: ProductsService,
+  ) {}
+
+  // PUBLIC: Get all active products for the marketplace.
+  @Get()
+  findMarketplaceProducts(
+    @Query('search') search?: string,
+    @Query('category') category?: string,
+  ) {
+    return this.productsService.findMarketplaceProducts(
+      search,
+      category,
+    );
+  }
+
+  // PUBLIC: Get one active product for customer details page.
+  @Get('public/:id')
+  findPublicProductById(@Param('id') id: string) {
+    return this.productsService.findPublicProductById(id);
+  }
+
+  // SELLER ONLY: Create a product.
+  @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('seller')
+  create(
+    @Req() req: AuthenticatedRequest,
+    @Body() dto: CreateProductDto,
+  ) {
+    return this.productsService.create(
+      req.user.userId,
+      dto,
+    );
+  }
+
+  // SELLER ONLY: Get own products.
+  @Get('mine')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('seller')
+  findMyProducts(@Req() req: AuthenticatedRequest) {
+    return this.productsService.findMyProducts(
+      req.user.userId,
+    );
+  }
+
+  // SELLER ONLY: Get one of their own products.
+  @Get(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('seller')
+  findOne(
+    @Param('id') id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.productsService.findOne(
+      id,
+      req.user.userId,
+    );
+  }
+
+  // SELLER ONLY: Update their own product.
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('seller')
+  update(
+    @Param('id') id: string,
+    @Req() req: AuthenticatedRequest,
+    @Body() dto: UpdateProductDto,
+  ) {
+    return this.productsService.update(
+      id,
+      req.user.userId,
+      dto,
+    );
+  }
+
+  // SELLER ONLY: Delete their own product.
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('seller')
+  remove(
+    @Param('id') id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.productsService.remove(
+      id,
+      req.user.userId,
+    );
+  }
+}
