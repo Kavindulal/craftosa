@@ -1,10 +1,10 @@
-
 import {
   Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -15,6 +15,7 @@ import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -47,14 +48,20 @@ export class AuthController {
     );
   }
 
-  // GET /auth/profile
-  // Requires a valid JWT access token
+  // GET /auth/profile - retrieve the saved profile for the signed-in user.
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   getProfile(@Req() req: AuthenticatedRequest) {
-    return {
-      message: 'Profile retrieved successfully',
-      user: req.user,
-    };
+    return this.authService.getAccount(req.user.userId);
+  }
+
+  // PATCH /auth/profile - update the signed-in user's editable profile fields.
+  @Patch('profile')
+  @UseGuards(JwtAuthGuard)
+  updateProfile(
+    @Req() req: AuthenticatedRequest,
+    @Body() body: UpdateProfileDto,
+  ) {
+    return this.authService.updateAccount(req.user.userId, body);
   }
 }
