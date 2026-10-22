@@ -78,6 +78,37 @@ export class SellersService {
     return seller;
   }
 
+
+  // PATCH /sellers/me/shop - update the authenticated seller's shop details.
+  async updateMyShop(userId: string, dto: import('./dto/update-shop.dto').UpdateShopDto) {
+    if (!Types.ObjectId.isValid(userId)) {
+      throw new BadRequestException('Invalid user ID');
+    }
+
+    const seller = await this.sellerModel.findOne({ user: new Types.ObjectId(userId) }).exec();
+    if (!seller) {
+      throw new NotFoundException('No seller shop found for this account. Complete the seller application first.');
+    }
+
+    seller.shopName = dto.shopName.trim();
+    seller.bio = dto.bio.trim();
+    seller.craftTypes = dto.craftTypes.map((item) => item.trim()).filter(Boolean);
+    seller.city = dto.city.trim();
+    await seller.save();
+
+    return {
+      message: 'Shop details updated successfully',
+      seller: {
+        id: seller._id.toString(),
+        shopName: seller.shopName,
+        bio: seller.bio,
+        craftTypes: seller.craftTypes,
+        city: seller.city,
+        status: seller.status,
+      },
+    };
+  }
+
   // GET /sellers?status=pending (admin only)
   async findApplications(status?: string) {
     if (
