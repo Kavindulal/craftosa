@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { addToCart } from "../../lib/cart";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
@@ -32,6 +33,7 @@ export default function ProductClient({ productId }: { productId: string }) {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [cartMessage, setCartMessage] = useState("");
 
   useEffect(() => {
     if (!productId) return;
@@ -287,14 +289,15 @@ export default function ProductClient({ productId }: { productId: string }) {
               type="button"
               disabled={!inStock}
               onClick={() => {
-                alert(
-                  "Product details are ready. Shopping cart functionality will be added next."
-                );
+                addToCart({ productId: product._id, name: product.name, price: Number(product.price), imageUrl: product.imageUrl || fallbackImage, stock: product.stock }, quantity);
+                setCartMessage("Added to your cart successfully.");
               }}
               className="mt-7 w-full rounded-full bg-[#a45b43] px-7 py-4 font-semibold text-white shadow-sm transition hover:bg-[#87452f] disabled:cursor-not-allowed disabled:bg-stone-400"
             >
               {inStock ? "Add to Cart" : "Out of Stock"}
             </button>
+            {cartMessage && <div role="status" className="mt-3 rounded-xl bg-green-50 p-3 text-sm text-green-800">{cartMessage} <Link href="/cart" className="font-semibold underline">View cart</Link></div>}
+            <Link href="/cart" className="mt-4 block text-center text-sm font-semibold text-[#8b4c35]">View shopping cart →</Link>
 
             <p className="mt-4 text-center text-xs leading-6 text-stone-500">
               Thoughtfully made. Supporting local creativity.
