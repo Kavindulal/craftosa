@@ -40,7 +40,21 @@ export class OrdersService {
   }
   async findSellerOrders(sellerId: string) {
     if (!Types.ObjectId.isValid(sellerId)) throw new BadRequestException('Invalid seller ID');
-    return this.orderModel.find({ 'items.sellerId': new Types.ObjectId(sellerId) }).sort({ createdAt: -1 }).lean().exec();
+    const orders = await this.orderModel.find().sort({ createdAt: -1 }).exec();
+    const visible: any[] = [];
+    for (const order of orders) {
+      let changed = false;
+      for (const item of order.items) {
+        if (!item.sellerId) {
+          const product = await this.productModel.findById(item.productId).select('seller').exec();
+          if (product) { item.sellerId = product.seller; changed = true; }
+        }
+      }
+      if (changed) await order.save();
+      const ownItems = order.items.filter(item => item.sellerId?.toString() === sellerId);
+      if (ownItems.length) visible.push({ ...order.toObject(), items: ownItems, sellerSubtotal: ownItems.reduce((sum, item) => sum + item.lineTotal, 0) });
+    }
+    return visible;
   }
   async updateSellerItemStatus(sellerId: string, orderId: string, dto: UpdateOrderStatusDto) {
     if (!Types.ObjectId.isValid(sellerId) || !Types.ObjectId.isValid(orderId)) throw new BadRequestException('Invalid seller or order ID');
