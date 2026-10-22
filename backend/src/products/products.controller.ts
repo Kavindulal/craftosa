@@ -46,6 +46,12 @@ export class ProductsController {
     );
   }
 
+  // PUBLIC: Get active products belonging to an approved seller.
+  @Get('public/seller/:sellerId')
+  findPublicSellerProducts(@Param('sellerId') sellerId: string) {
+    return this.productsService.findPublicSellerProducts(sellerId);
+  }
+
   // PUBLIC: Get one active product for customer details page.
   @Get('public/:id')
   findPublicProductById(@Param('id') id: string) {
