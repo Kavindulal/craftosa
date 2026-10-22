@@ -89,22 +89,53 @@ export default function SellerSettingsPage() {
       return;
     }
     try {
-      const response = await fetch(
+      const payload = {
+        shopName: form.shopName.trim(),
+        bio: form.bio.trim(),
+        craftTypes: form.craftTypes.split(",").map((item) => item.trim()).filter(Boolean),
+        city: form.city.trim(),
+      };
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+
+      let response = await fetch(
         hasApplication ? `${API_URL}/sellers/me/shop` : `${API_URL}/sellers/apply`,
         {
-        method: hasApplication ? "PATCH" : "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          method: hasApplication ? "PATCH" : "POST",
+          headers,
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify({
-          shopName: form.shopName.trim(),
-          bio: form.bio.trim(),
-          craftTypes: form.craftTypes.split(",").map((item) => item.trim()).filter(Boolean),
-          city: form.city.trim(),
-        }),
-      });
-      const data = await response.json();
+      );
+      let data = await response.json();
+
+      // If an application already exists despite the initial lookup, update it
+      // instead of showing a duplicate-application error.
+      if (
+        !hasApplication &&
+        response.status === 409 &&
+        typeof data.message === "string" &&
+        data.message.toLowerCase().includes("already exists")
+      ) {
+        const existingResponse = await fetch(`${API_URL}/sellers/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+          cache: "no-store",
+        });
+        if (existingResponse.ok) {
+          const existingData = await existingResponse.json();
+          const existingShop: Shop = existingData.seller || existingData;
+          setHasApplication(true);
+          setStatus(existingShop.status || "");
+          response = await fetch(`${API_URL}/sellers/me/shop`, {
+            method: "PATCH",
+            headers,
+            body: JSON.stringify(payload),
+          });
+          data = await response.json();
+        }
+      }
+
       if (!response.ok) {
         const detail = Array.isArray(data.message) ? data.message.join(", ") : data.message;
         throw new Error(detail || "Could not save shop details.");
