@@ -14,12 +14,15 @@ import {
 } from './product.schema';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { Seller, SellerDocument, SellerStatus } from '../sellers/seller.schema';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectModel(Product.name)
     private readonly productModel: Model<ProductDocument>,
+    @InjectModel(Seller.name)
+    private readonly sellerModel: Model<SellerDocument>,
   ) {}
 
   // PUBLIC MARKETPLACE: View active products without login.
@@ -60,6 +63,24 @@ export class ProductsService {
       .sort({ createdAt: -1 })
       .lean()
       .exec();
+  }
+
+  // PUBLIC: List active products only for an approved seller's shop.
+  async findPublicSellerProducts(sellerId: string) {
+    if (!Types.ObjectId.isValid(sellerId)) {
+      throw new BadRequestException('Invalid seller ID');
+    }
+    const approvedSeller = await this.sellerModel.findOne({
+      user: new Types.ObjectId(sellerId),
+      status: SellerStatus.APPROVED,
+    }).select('_id').lean().exec();
+    if (!approvedSeller) {
+      throw new NotFoundException('This shop is not available publicly');
+    }
+    return this.productModel.find({
+      seller: new Types.ObjectId(sellerId),
+      status: ProductStatus.ACTIVE,
+    }).sort({ createdAt: -1 }).lean().exec();
   }
 
   // PUBLIC: View one active product without login.
