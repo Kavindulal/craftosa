@@ -17,7 +17,8 @@ type Product = {
   stock: number;
   imageUrl: string;
   status: string;
-  seller?: {
+  seller?: string | {
+    _id?: string;
     shopName?: string;
     name?: string;
   };
@@ -126,6 +127,9 @@ export default function ProductDetailsPage() {
 
   const image = product.imageUrl || fallbackImage;
   const inStock = product.stock > 0;
+  const sellerId = typeof product.seller === "string"
+    ? product.seller
+    : product.seller?._id;
 
   return (
     <main className="min-h-screen bg-[#faf7f2] text-stone-800">
@@ -191,6 +195,20 @@ export default function ProductDetailsPage() {
             </p>
 
             <div className="my-7 h-px bg-stone-200" />
+
+            {sellerId && (
+              <Link
+                href={`/shops/${sellerId}`}
+                className="mb-7 flex items-center justify-between gap-4 rounded-2xl border border-stone-200 bg-white p-4 transition hover:border-[#c99b80] hover:shadow-sm"
+              >
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-[#a45b43]">Meet the maker</p>
+                  <p className="mt-1 font-semibold text-stone-800">Discover this seller’s shop</p>
+                  <p className="mt-1 text-sm text-stone-500">Read their story and explore their craft</p>
+                </div>
+                <span className="text-xl text-[#a45b43]">→</span>
+              </Link>
+            )}
 
             <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-700">
               About this product
