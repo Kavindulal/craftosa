@@ -1,8 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-
 export type OrderDocument = HydratedDocument<Order>;
-
 @Schema({ _id: false })
 export class OrderItem {
   @Prop({ type: Types.ObjectId, ref: 'Product', required: true }) productId!: Types.ObjectId;
@@ -14,7 +12,6 @@ export class OrderItem {
   @Prop({ required: true, default: 'pending', enum: ['pending','confirmed','processing','shipped','delivered','cancelled'] }) status!: string;
 }
 const OrderItemSchema = SchemaFactory.createForClass(OrderItem);
-
 @Schema({ timestamps: true })
 export class Order {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true }) customer!: Types.ObjectId;
@@ -26,7 +23,6 @@ export class Order {
   @Prop({ required: true, trim: true }) city!: string;
   @Prop({ required: true, default: 'cash_on_delivery' }) paymentMethod!: string;
   @Prop({ required: true, default: 'pending', enum: ['pending','confirmed','processing','shipped','delivered','cancelled'] }) status!: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: Date; updatedAt?: Date;
 }
 export const OrderSchema = SchemaFactory.createForClass(Order);
