@@ -2,6 +2,14 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 export type OrderDocument = HydratedDocument<Order>;
 @Schema({ _id: false })
+export class OrderStatusEvent {
+  @Prop({ required: true, enum: ['pending','confirmed','processing','shipped','delivered','cancelled'] }) status!: string;
+  @Prop({ required: true, default: Date.now }) changedAt!: Date;
+  @Prop({ required: true, enum: ['system','seller','admin'] }) changedBy!: string;
+  @Prop({ trim: true }) note?: string;
+}
+const OrderStatusEventSchema = SchemaFactory.createForClass(OrderStatusEvent);
+@Schema({ _id: false })
 export class OrderItem {
   @Prop({ type: Types.ObjectId, ref: 'Product', required: true }) productId!: Types.ObjectId;
   @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true }) sellerId!: Types.ObjectId;
@@ -16,6 +24,7 @@ const OrderItemSchema = SchemaFactory.createForClass(OrderItem);
 export class Order {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true }) customer!: Types.ObjectId;
   @Prop({ type: [OrderItemSchema], required: true }) items!: OrderItem[];
+  @Prop({ type: [OrderStatusEventSchema], default: [] }) statusHistory!: OrderStatusEvent[];
   @Prop({ required: true, min: 0 }) total!: number;
   @Prop({ required: true, trim: true }) customerName!: string;
   @Prop({ required: true, trim: true }) phone!: string;
