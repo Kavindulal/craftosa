@@ -161,6 +161,7 @@ export default function MarketplacePage() {
 
           <div className="flex items-center gap-2">
             <Link href="/cart" className="rounded-xl px-3 py-2 text-sm font-semibold text-[#8b4c35] hover:bg-[#f8eee5]">🛒 Cart</Link>
+            {signedInUser?.role === "customer" && <Link href="/wishlist" className="rounded-xl px-3 py-2 text-sm font-semibold text-[#8b4c35] hover:bg-[#f8eee5]">♡ Wishlist</Link>}
             {signedInUser ? (
               <>
                 {signedInUser.role === "seller" ? (
