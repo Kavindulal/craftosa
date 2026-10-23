@@ -1,4 +1,6 @@
 import { Suspense } from "react";
+
+export const dynamic = "force-dynamic";
 import ProductClient from "./product-client";
 
 export default async function ProductDetailsPage({ params }: { params: Promise<{ id: string }> }) {
