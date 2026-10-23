@@ -29,9 +29,11 @@ export class OrdersService {
       }
       const total = Number(items.reduce((sum, item) => sum + item.lineTotal, 0).toFixed(2));
       const order = await this.orderModel.create({ customer: new Types.ObjectId(customerId), items, total, customerName: dto.customerName.trim(), phone: dto.phone.trim(), address: dto.address.trim(), city: dto.city.trim(), paymentMethod: 'cash_on_delivery', status: 'pending', statusHistory: [{ status: 'pending', changedAt: new Date(), changedBy: 'system', note: 'Order placed successfully' }] });
-      await this.notificationModel.create({ recipient: order.customer, role: 'customer', orderId: order._id, title: 'Order placed', message: 'Your order was placed successfully.', status: 'pending' });
-      const sellerIds = [...new Set(items.map(item => String(item.sellerId)))];
-      if (sellerIds.length) await this.notificationModel.insertMany(sellerIds.map(sellerId => ({ recipient: new Types.ObjectId(sellerId), role: 'seller', orderId: order._id, title: 'New order received', message: `A new order from ${order.customerName} includes products from your shop.`, status: 'pending' })));
+      try {
+        await this.notificationModel.create({ recipient: order.customer, role: 'customer', orderId: order._id, title: 'Order placed', message: 'Your order was placed successfully.', status: 'pending' });
+        const sellerIds = [...new Set(items.map(item => String(item.sellerId)))];
+        if (sellerIds.length) await this.notificationModel.insertMany(sellerIds.map(sellerId => ({ recipient: new Types.ObjectId(sellerId), role: 'seller', orderId: order._id, title: 'New order received', message: `A new order from ${order.customerName} includes products from your shop.`, status: 'pending' })));
+      } catch { /* A notification failure must not undo a successfully created order. */ }
       return { message: 'Order placed successfully', order: { id: order._id, total: order.total, status: order.status, paymentMethod: order.paymentMethod, items: order.items, createdAt: order.createdAt } };
     } catch (error) {
       await Promise.all(reserved.map(item => this.productModel.updateOne({ _id: item.id }, { $inc: { stock: item.quantity } }).exec()));
@@ -80,13 +82,14 @@ export class OrdersService {
     if (!Types.ObjectId.isValid(orderId)) throw new BadRequestException('Invalid order ID');
     const order = await this.orderModel.findById(orderId).exec();
     if (!order) throw new NotFoundException('Order not found');
-    if (order.status !== dto.status) {
+    const statusChanged = order.status !== dto.status;
+    if (statusChanged) {
       order.status = dto.status;
       for (const item of order.items) item.status = dto.status;
       order.statusHistory.push({ status: dto.status, changedAt: new Date(), changedBy: 'admin', note: `Admin updated order status to ${dto.status}` } as any);
     }
     await order.save();
-    await this.notificationModel.create({ recipient: order.customer, role: 'customer', orderId: order._id, title: 'Order status updated', message: `Your order status is now ${order.status}.`, status: order.status });
+    if (statusChanged) await this.notificationModel.create({ recipient: order.customer, role: 'customer', orderId: order._id, title: 'Order status updated', message: `Your order status is now ${order.status}.`, status: order.status });
     return { message: 'Order status updated', order };
   }
   async findNotifications(userId: string, role: string) {
