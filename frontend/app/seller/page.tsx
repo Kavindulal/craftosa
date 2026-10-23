@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import NotificationBell from "../../components/notification-bell";
+import CraftosaLogo from "../../components/craftosa-logo";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
@@ -87,14 +88,7 @@ export default function SellerDashboard() {
       <div className="flex min-h-screen">
         {/* Sidebar */}
         <aside className="hidden w-64 shrink-0 flex-col border-r border-[#eee5db] bg-white p-6 md:flex">
-          <Link href="/" className="mb-12 flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#8b4c35] text-lg font-bold text-white">
-              C
-            </span>
-            <span className="text-2xl font-semibold tracking-tight">
-              craftosa<span className="text-[#b86c4d]">.</span>
-            </span>
-          </Link>
+          <CraftosaLogo className="mb-12" />
 
           <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-[#a89a8e]">
             Workspace
@@ -198,8 +192,9 @@ export default function SellerDashboard() {
             )}
 
             {/* Hero */}
-            <section className="relative overflow-hidden rounded-3xl bg-[#75422f] p-7 text-white sm:p-10">
-              <div className="absolute -right-12 -top-20 h-64 w-64 rounded-full border-[35px] border-white/5" />
+            <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#75422f] via-[#824832] to-[#4e2d22] p-7 text-white shadow-xl shadow-[#75422f]/10 sm:p-10 lg:p-12">
+              <div className="absolute -right-12 -top-20 h-64 w-64 rounded-full border-[35px] border-white/[0.07]" />
+              <div className="absolute right-24 top-10 h-3 w-3 rounded-full bg-[#f1c5a3]/70" />
               <div className="absolute -bottom-24 right-36 h-48 w-48 rounded-full bg-[#d5a17e]/10" />
 
               <div className="relative max-w-2xl">
@@ -207,7 +202,7 @@ export default function SellerDashboard() {
                   YOUR CREATIVE SPACE
                 </span>
 
-                <h2 className="mt-5 text-3xl font-semibold leading-tight sm:text-4xl">
+                <h2 className="mt-5 max-w-xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
                   Every handmade piece
                   <br className="hidden sm:block" /> has a story.
                 </h2>
@@ -244,11 +239,11 @@ export default function SellerDashboard() {
                 ].map((stat) => (
                   <article
                     key={stat.label}
-                    className="rounded-2xl border border-[#eee5db] bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-md"
+                    className="group rounded-2xl border border-[#eee5db] bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-[#d9b8a4] hover:shadow-lg hover:shadow-[#75422f]/5"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <p className="text-sm text-[#88796e]">{stat.label}</p>
-                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f8eee5] text-lg text-[#a5684e]">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f8eee5] text-lg text-[#a5684e] transition group-hover:bg-[#8b4c35] group-hover:text-white">
                         {stat.icon}
                       </span>
                     </div>
