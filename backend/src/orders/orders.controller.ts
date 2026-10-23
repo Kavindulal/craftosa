@@ -13,6 +13,9 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
   @Post() @Roles('customer')
   create(@Req() req: AuthenticatedRequest, @Body() dto: CreateOrderDto) { return this.ordersService.create(req.user.userId, dto); }
+  @Get('notifications/mine') @Roles('customer')
+  findNotifications(@Req() req: AuthenticatedRequest) { return this.ordersService.findNotifications(req.user.userId); }
+
   @Get('mine') @Roles('customer')
   findMine(@Req() req: AuthenticatedRequest) { return this.ordersService.findMine(req.user.userId); }
   @Get('seller') @Roles('seller')
