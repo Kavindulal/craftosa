@@ -5,9 +5,10 @@ import { Product, ProductDocument, ProductStatus } from '../products/product.sch
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { Order, OrderDocument } from './order.schema';
+import { Notification, NotificationDocument } from './notification.schema';
 @Injectable()
 export class OrdersService {
-  constructor(@InjectModel(Order.name) private readonly orderModel: Model<OrderDocument>, @InjectModel(Product.name) private readonly productModel: Model<ProductDocument>) {}
+  constructor(@InjectModel(Order.name) private readonly orderModel: Model<OrderDocument>, @InjectModel(Product.name) private readonly productModel: Model<ProductDocument>, @InjectModel(Notification.name) private readonly notificationModel: Model<NotificationDocument>) {}
   async create(customerId: string, dto: CreateOrderDto) {
     if (!Types.ObjectId.isValid(customerId)) throw new BadRequestException('Invalid customer ID');
     const merged = new Map<string, number>();
@@ -28,6 +29,9 @@ export class OrdersService {
       }
       const total = Number(items.reduce((sum, item) => sum + item.lineTotal, 0).toFixed(2));
       const order = await this.orderModel.create({ customer: new Types.ObjectId(customerId), items, total, customerName: dto.customerName.trim(), phone: dto.phone.trim(), address: dto.address.trim(), city: dto.city.trim(), paymentMethod: 'cash_on_delivery', status: 'pending', statusHistory: [{ status: 'pending', changedAt: new Date(), changedBy: 'system', note: 'Order placed successfully' }] });
+      await this.notificationModel.create({ recipient: order.customer, role: 'customer', orderId: order._id, title: 'Order placed', message: 'Your order was placed successfully.', status: 'pending' });
+      const sellerIds = [...new Set(items.map(item => String(item.sellerId)))];
+      if (sellerIds.length) await this.notificationModel.insertMany(sellerIds.map(sellerId => ({ recipient: new Types.ObjectId(sellerId), role: 'seller', orderId: order._id, title: 'New order received', message: `A new order from ${order.customerName} includes products from your shop.`, status: 'pending' })));
       return { message: 'Order placed successfully', order: { id: order._id, total: order.total, status: order.status, paymentMethod: order.paymentMethod, items: order.items, createdAt: order.createdAt } };
     } catch (error) {
       await Promise.all(reserved.map(item => this.productModel.updateOne({ _id: item.id }, { $inc: { stock: item.quantity } }).exec()));
@@ -68,6 +72,7 @@ export class OrdersService {
       order.statusHistory.push({ status: dto.status, changedAt: new Date(), changedBy: 'seller', note: `Seller updated item status to ${dto.status}` } as any);
     }
     await order.save();
+    await this.notificationModel.create({ recipient: order.customer, role: 'customer', orderId: order._id, title: 'Order status updated', message: `Your order status is now ${order.status}.`, status: order.status });
     return { message: 'Order status updated', order };
   }
   async findAll() { return this.orderModel.find().sort({ createdAt: -1 }).lean().exec(); }
@@ -81,11 +86,22 @@ export class OrdersService {
       order.statusHistory.push({ status: dto.status, changedAt: new Date(), changedBy: 'admin', note: `Admin updated order status to ${dto.status}` } as any);
     }
     await order.save();
+    await this.notificationModel.create({ recipient: order.customer, role: 'customer', orderId: order._id, title: 'Order status updated', message: `Your order status is now ${order.status}.`, status: order.status });
     return { message: 'Order status updated', order };
   }
-  async findNotifications(customerId: string) {
-    if (!Types.ObjectId.isValid(customerId)) throw new BadRequestException('Invalid customer ID');
-    const orders = await this.orderModel.find({ customer: new Types.ObjectId(customerId) }).sort({ updatedAt: -1 }).lean().exec();
-    return orders.flatMap(order => (order.statusHistory || []).map(event => ({ id: `${order._id}-${new Date(event.changedAt).getTime()}`, orderId: order._id, status: event.status, changedAt: event.changedAt, changedBy: event.changedBy, note: event.note, read: false }))).sort((a,b) => new Date(b.changedAt).getTime()-new Date(a.changedAt).getTime());
+  async findNotifications(userId: string, role: string) {
+    if (!Types.ObjectId.isValid(userId)) throw new BadRequestException('Invalid user ID');
+    return this.notificationModel.find({ recipient: new Types.ObjectId(userId), role }).sort({ createdAt: -1 }).limit(100).lean().exec();
+  }
+  async markNotificationRead(userId: string, role: string, notificationId: string) {
+    if (!Types.ObjectId.isValid(userId) || !Types.ObjectId.isValid(notificationId)) throw new BadRequestException('Invalid user or notification ID');
+    const result = await this.notificationModel.findOneAndUpdate({ _id: new Types.ObjectId(notificationId), recipient: new Types.ObjectId(userId), role }, { $set: { read: true } }, { new: true }).lean().exec();
+    if (!result) throw new NotFoundException('Notification not found');
+    return result;
+  }
+  async markAllNotificationsRead(userId: string, role: string) {
+    if (!Types.ObjectId.isValid(userId)) throw new BadRequestException('Invalid user ID');
+    await this.notificationModel.updateMany({ recipient: new Types.ObjectId(userId), role, read: false }, { $set: { read: true } }).exec();
+    return { message: 'All notifications marked as read' };
   }
 }
