@@ -293,6 +293,18 @@ export default function ProductClient({ productId }: { productId: string }) {
               </span>
             </div>
 
+            <button
+              type="button"
+              onClick={toggleWishlist}
+              disabled={wishlistLoading}
+              aria-pressed={isSaved}
+              className="mt-2 inline-flex items-center gap-2 rounded-full border border-[#e6cfc1] bg-white px-5 py-3 text-sm font-semibold text-[#8b4c35] transition hover:bg-[#fff2eb] disabled:opacity-60"
+            >
+              <span aria-hidden="true">{isSaved ? "♥" : "♡"}</span>
+              {wishlistLoading ? "Saving..." : isSaved ? "Saved to Wishlist" : "Add to Wishlist"}
+            </button>
+            {wishlistMessage && <p role="status" className="mt-2 text-sm text-[#8b4c35]">{wishlistMessage}{" "}<Link href="/wishlist" className="font-semibold underline">View wishlist</Link></p>}
+
             <div className="mt-8">
               <label
                 htmlFor="quantity"
