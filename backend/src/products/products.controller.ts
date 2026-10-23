@@ -100,6 +100,38 @@ export class ProductsController {
     );
   }
 
+  // CUSTOMER ONLY: List wishlist products.
+  @Get('wishlist')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('customer')
+  getWishlist(@Req() req: AuthenticatedRequest) {
+    return this.productsService.getWishlist(req.user.userId);
+  }
+
+  // CUSTOMER ONLY: Get saved product IDs.
+  @Get('wishlist/ids')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('customer')
+  getWishlistIds(@Req() req: AuthenticatedRequest) {
+    return this.productsService.getWishlistIds(req.user.userId);
+  }
+
+  // CUSTOMER ONLY: Add a product to wishlist.
+  @Post('wishlist/:productId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('customer')
+  addToWishlist(@Req() req: AuthenticatedRequest, @Param('productId') productId: string) {
+    return this.productsService.addToWishlist(req.user.userId, productId);
+  }
+
+  // CUSTOMER ONLY: Remove a product from wishlist.
+  @Delete('wishlist/:productId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('customer')
+  removeFromWishlist(@Req() req: AuthenticatedRequest, @Param('productId') productId: string) {
+    return this.productsService.removeFromWishlist(req.user.userId, productId);
+  }
+
   // SELLER ONLY: Get one of their own products.
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
