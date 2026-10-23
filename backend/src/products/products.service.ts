@@ -17,6 +17,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { Seller, SellerDocument, SellerStatus } from '../sellers/seller.schema';
 import { Order, OrderDocument } from '../orders/order.schema';
 import { Review, ReviewDocument } from './review.schema';
+import { Wishlist, WishlistDocument } from './wishlist.schema';
 
 @Injectable()
 export class ProductsService {
@@ -27,6 +28,7 @@ export class ProductsService {
     private readonly sellerModel: Model<SellerDocument>,
     @InjectModel(Order.name) private readonly orderModel: Model<OrderDocument>,
     @InjectModel(Review.name) private readonly reviewModel: Model<ReviewDocument>,
+    @InjectModel(Wishlist.name) private readonly wishlistModel: Model<WishlistDocument>,
   ) {}
 
   // PUBLIC MARKETPLACE: View active products without login.
@@ -140,6 +142,50 @@ export class ProductsService {
       if (error?.code === 11000) throw new BadRequestException('You have already reviewed this product for this order.');
       throw error;
     }
+  }
+
+
+  // CUSTOMER: List saved active products.
+  async getWishlist(customerId: string) {
+    if (!Types.ObjectId.isValid(customerId)) throw new BadRequestException('Invalid customer ID');
+    const entries = await this.wishlistModel
+      .find({ customerId: new Types.ObjectId(customerId) })
+      .sort({ createdAt: -1 })
+      .populate({ path: 'productId', match: { status: ProductStatus.ACTIVE } })
+      .lean()
+      .exec();
+    return entries.filter((entry: any) => entry.productId).map((entry: any) => ({
+      _id: String(entry._id),
+      savedAt: entry.createdAt,
+      product: entry.productId,
+    }));
+  }
+
+  // CUSTOMER: Return saved product IDs for wishlist heart states.
+  async getWishlistIds(customerId: string) {
+    if (!Types.ObjectId.isValid(customerId)) throw new BadRequestException('Invalid customer ID');
+    const entries = await this.wishlistModel.find({ customerId: new Types.ObjectId(customerId) }).select('productId').lean().exec();
+    return entries.map((entry: any) => String(entry.productId));
+  }
+
+  // CUSTOMER: Save a product once.
+  async addToWishlist(customerId: string, productId: string) {
+    if (!Types.ObjectId.isValid(customerId) || !Types.ObjectId.isValid(productId)) throw new BadRequestException('Invalid customer or product ID');
+    const product = await this.productModel.findOne({ _id: new Types.ObjectId(productId), status: ProductStatus.ACTIVE }).select('_id').lean().exec();
+    if (!product) throw new NotFoundException('Product not found or unavailable');
+    await this.wishlistModel.updateOne(
+      { customerId: new Types.ObjectId(customerId), productId: new Types.ObjectId(productId) },
+      { $setOnInsert: { customerId: new Types.ObjectId(customerId), productId: new Types.ObjectId(productId) } },
+      { upsert: true },
+    ).exec();
+    return { message: 'Added to your wishlist', productId };
+  }
+
+  // CUSTOMER: Remove a saved product.
+  async removeFromWishlist(customerId: string, productId: string) {
+    if (!Types.ObjectId.isValid(customerId) || !Types.ObjectId.isValid(productId)) throw new BadRequestException('Invalid customer or product ID');
+    await this.wishlistModel.deleteOne({ customerId: new Types.ObjectId(customerId), productId: new Types.ObjectId(productId) }).exec();
+    return { message: 'Removed from your wishlist', productId };
   }
 
   // SELLER: Create a product.
