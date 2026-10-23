@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import CraftosaLogo from "../components/craftosa-logo";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
@@ -138,14 +139,7 @@ export default function MarketplacePage() {
       {/* Navigation */}
       <header className="sticky top-0 z-20 border-b border-[#eee3d8] bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8b4c35] font-bold text-white">
-              C
-            </span>
-            <span className="text-xl font-bold tracking-tight sm:text-2xl">
-              craftosa<span className="text-[#b86c4d]">.</span>
-            </span>
-          </Link>
+          <CraftosaLogo />
 
           <nav className="hidden items-center gap-7 text-sm text-[#76675d] md:flex">
             <a href="#shop" className="hover:text-[#8b4c35]">
