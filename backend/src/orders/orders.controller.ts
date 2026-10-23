@@ -22,6 +22,8 @@ export class OrdersController {
 
   @Get('mine') @Roles('customer')
   findMine(@Req() req: AuthenticatedRequest) { return this.ordersService.findMine(req.user.userId); }
+  @Get('seller/analytics') @Roles('seller')
+  getSellerAnalytics(@Req() req: AuthenticatedRequest) { return this.ordersService.getSellerAnalytics(req.user.userId); }
   @Get('seller') @Roles('seller')
   findSellerOrders(@Req() req: AuthenticatedRequest) { return this.ordersService.findSellerOrders(req.user.userId); }
   @Patch('seller/:orderId/status') @Roles('seller')
