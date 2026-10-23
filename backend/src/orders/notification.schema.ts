@@ -11,8 +11,14 @@ export class Notification {
   @Prop({ required: true, enum: ['customer', 'seller', 'admin'], index: true })
   role!: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'Order', required: true, index: true })
-  orderId!: Types.ObjectId;
+  @Prop({ type: Types.ObjectId, ref: 'Order', required: false, default: null, index: true })
+  orderId!: Types.ObjectId | null;
+
+  @Prop({ type: String, enum: ['order', 'chat'], default: 'order', index: true })
+  type!: 'order' | 'chat';
+
+  @Prop({ type: Types.ObjectId, ref: 'ChatConversation', default: null, index: true })
+  conversationId!: Types.ObjectId | null;
 
   @Prop({ required: true, trim: true })
   title!: string;
