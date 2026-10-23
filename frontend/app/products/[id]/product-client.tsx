@@ -35,6 +35,9 @@ export default function ProductClient({ productId }: { productId: string }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [cartMessage, setCartMessage] = useState("");
+  const [isSaved, setIsSaved] = useState(false);
+  const [wishlistMessage, setWishlistMessage] = useState("");
+  const [wishlistLoading, setWishlistLoading] = useState(false);
 
   useEffect(() => {
     if (!productId) return;
@@ -83,6 +86,61 @@ export default function ProductClient({ productId }: { productId: string }) {
 
     return () => controller.abort();
   }, [productId]);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("craftosa_access_token");
+    const userRaw = sessionStorage.getItem("craftosa_user");
+    if (!token || !userRaw) return;
+    try {
+      const user = JSON.parse(userRaw) as { role?: string };
+      if (user.role !== "customer") return;
+    } catch {
+      return;
+    }
+    fetch(`${API_URL}/products/wishlist/ids`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    }).then(async (response) => {
+      if (!response.ok) return;
+      const ids: string[] = await response.json();
+      setIsSaved(ids.includes(productId));
+    }).catch(() => undefined);
+  }, [productId]);
+
+  async function toggleWishlist() {
+    const token = sessionStorage.getItem("craftosa_access_token");
+    const userRaw = sessionStorage.getItem("craftosa_user");
+    if (!token || !userRaw) {
+      window.location.href = "/login";
+      return;
+    }
+    try {
+      const user = JSON.parse(userRaw) as { role?: string };
+      if (user.role !== "customer") {
+        setWishlistMessage("Wishlist is available for customer accounts.");
+        return;
+      }
+    } catch {
+      window.location.href = "/login";
+      return;
+    }
+    setWishlistLoading(true);
+    setWishlistMessage("");
+    try {
+      const response = await fetch(`${API_URL}/products/wishlist/${encodeURIComponent(productId)}`, {
+        method: isSaved ? "DELETE" : "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.message || "Could not update your wishlist.");
+      setIsSaved(!isSaved);
+      setWishlistMessage(isSaved ? "Removed from your wishlist." : "Saved to your wishlist ❤️");
+    } catch (err) {
+      setWishlistMessage(err instanceof Error ? err.message : "Could not update your wishlist.");
+    } finally {
+      setWishlistLoading(false);
+    }
+  }
 
   if (loading) {
     return (
