@@ -58,6 +58,24 @@ export class ProductsController {
     return this.productsService.findPublicProductById(id);
   }
 
+  // PUBLIC: List reviews and rating summary for an active product.
+  @Get('public/:id/reviews')
+  findProductReviews(@Param('id') id: string) {
+    return this.productsService.findProductReviews(id);
+  }
+
+  // CUSTOMER ONLY: Create a review after a delivered purchase.
+  @Post('public/:id/reviews')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('customer')
+  createProductReview(
+    @Param('id') id: string,
+    @Req() req: AuthenticatedRequest,
+    @Body() dto: { rating: number; comment: string },
+  ) {
+    return this.productsService.createProductReview(req.user.userId, id, dto);
+  }
+
   // SELLER ONLY: Create a product.
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
