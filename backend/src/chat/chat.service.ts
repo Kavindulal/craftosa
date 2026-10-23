@@ -5,6 +5,7 @@ import { ChatConversation, ChatConversationDocument } from './chat-conversation.
 import { ChatMessage, ChatMessageDocument } from './chat-message.schema';
 import { Product, ProductDocument, ProductStatus } from '../products/product.schema';
 import { Seller, SellerDocument, SellerStatus } from '../sellers/seller.schema';
+import { Notification, NotificationDocument } from '../orders/notification.schema';
 
 @Injectable()
 export class ChatService {
@@ -13,6 +14,7 @@ export class ChatService {
     @InjectModel(ChatMessage.name) private readonly messageModel: Model<ChatMessageDocument>,
     @InjectModel(Product.name) private readonly productModel: Model<ProductDocument>,
     @InjectModel(Seller.name) private readonly sellerModel: Model<SellerDocument>,
+    @InjectModel(Notification.name) private readonly notificationModel: Model<NotificationDocument>,
   ) {}
 
   private async getConversationForParticipant(conversationId: string, userId: string) {
@@ -81,7 +83,20 @@ export class ChatService {
     if (!body || body.length > 2000) throw new BadRequestException('Message must be between 1 and 2000 characters');
     const message = await this.messageModel.create({ conversationId: conversation._id, senderId: new Types.ObjectId(userId), senderRole, body, readAt: null });
     const isCustomer = senderRole === 'customer';
+    const recipientId = isCustomer ? conversation.sellerId : conversation.customerId;
+    const recipientRole = isCustomer ? 'seller' : 'customer';
     await this.conversationModel.updateOne({ _id: conversation._id }, { $set: { lastMessage: body, lastMessageAt: new Date() }, $inc: { [isCustomer ? 'sellerUnreadCount' : 'customerUnreadCount']: 1 } }).exec();
+    try {
+      await this.notificationModel.create({
+        recipient: recipientId,
+        role: recipientRole,
+        type: 'chat',
+        conversationId: conversation._id,
+        title: isCustomer ? 'New message from a customer' : 'New message from a seller',
+        message: body.length > 120 ? `${body.slice(0, 117)}...` : body,
+        read: false,
+      });
+    } catch { /* A notification failure must not prevent message delivery. */ }
     return message;
   }
 }
