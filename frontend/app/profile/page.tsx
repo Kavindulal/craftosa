@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import NotificationBell from "../../components/notification-bell";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -156,6 +157,7 @@ export default function ProfilePage() {
     <main className="min-h-screen bg-[#f8f5ef] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
         <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
+          <NotificationBell />
           <Link href="/my-orders" className="rounded-xl border border-[#e7d9ce] px-4 py-2 text-sm font-medium text-[#8b4c35] hover:bg-white">My Orders</Link>
           <Link href="/notifications" className="rounded-xl border border-[#e7d9ce] px-4 py-2 text-sm font-medium text-[#8b4c35] hover:bg-white">Notifications</Link>
           <Link href="/" className="inline-flex items-center gap-3">
