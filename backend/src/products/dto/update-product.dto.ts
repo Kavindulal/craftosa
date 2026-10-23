@@ -50,14 +50,14 @@ export class UpdateProductDto {
   stock?: number;
 
   @IsOptional()
-  @IsUrl({ protocols: ['http', 'https'], require_protocol: true })
+  @IsUrl({ protocols: ['http', 'https'], require_protocol: true, require_tld: false })
   @MaxLength(2048)
   imageUrl?: string;
 
   @IsOptional()
   @IsArray()
   @ArrayMaxSize(8)
-  @IsUrl({ protocols: ['http', 'https'], require_protocol: true }, { each: true })
+  @IsUrl({ protocols: ['http', 'https'], require_protocol: true, require_tld: false }, { each: true })
   imageUrls?: string[];
 
   @IsOptional()
