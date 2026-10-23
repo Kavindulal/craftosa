@@ -1,10 +1,14 @@
 
 import { NestFactory } from '@nestjs/core';
+import * as express from 'express';
+import { join } from 'node:path';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.use('/uploads', express.static(join(process.cwd(), 'uploads')));
 
   // Enable request validation globally
   app.useGlobalPipes(
