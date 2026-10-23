@@ -1,6 +1,9 @@
 
 import {
   Body,
+  BadRequestException,
+  UploadedFile,
+  UseInterceptors,
   Controller,
   Delete,
   Get,
@@ -11,6 +14,10 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { mkdirSync } from 'node:fs';
+import { extname, join } from 'node:path';
 import { Request } from 'express';
 
 import { ProductsService } from './products.service';
@@ -76,6 +83,29 @@ export class ProductsController {
     return this.productsService.createProductReview(req.user.userId, id, dto);
   }
 
+  @Post('upload-image')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('seller')
+  @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({
+      destination: (_req, _file, callback) => {
+        const directory = join(process.cwd(), 'uploads', 'products');
+        mkdirSync(directory, { recursive: true });
+        callback(null, directory);
+      },
+      filename: (_req, file, callback) => callback(null, Date.now() + '-' + Math.round(Math.random() * 1e9) + extname(file.originalname).toLowerCase()),
+    }),
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: (_req, file, callback) => {
+      if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.mimetype)) return callback(new BadRequestException('Upload a JPG, PNG, WebP, or GIF image.'), false);
+      callback(null, true);
+    },
+  }))
+  uploadProductImage(@UploadedFile() file: { filename: string } | undefined) {
+    if (!file) throw new BadRequestException('Choose an image to upload.');
+    const baseUrl = process.env.PUBLIC_API_URL || 'http://localhost:3001';
+    return { imageUrl: baseUrl.replace(/\/$/, '') + '/uploads/products/' + file.filename };
+  }
   // SELLER ONLY: Create a product.
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
