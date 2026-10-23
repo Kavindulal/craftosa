@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { addToCart } from "../../lib/cart";
+import ReviewsSection from "./reviews-section";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
@@ -304,6 +305,8 @@ export default function ProductClient({ productId }: { productId: string }) {
             </p>
           </div>
         </section>
+
+        <ReviewsSection productId={product._id} />
 
         <section className="mt-16 rounded-3xl border border-stone-200 bg-[#fffdf9] px-6 py-8 md:px-10 md:py-10">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#a45b43]">
