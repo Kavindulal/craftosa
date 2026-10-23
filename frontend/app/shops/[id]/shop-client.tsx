@@ -15,6 +15,8 @@ type PublicShop = {
   bio: string;
   craftTypes: string[];
   city: string;
+  profileImageUrl?: string;
+  coverImageUrl?: string;
   status: string;
 };
 
@@ -87,11 +89,24 @@ export default function ShopClient({ userId }: { userId: string }) {
           </section>
         ) : (
           <>
-            <section className="relative overflow-hidden rounded-3xl bg-[#75422f] px-7 py-10 text-white md:px-12 md:py-14">
-              <div className="absolute -right-10 -top-20 h-64 w-64 rounded-full border-[35px] border-white/5" />
-              <p className="relative text-xs font-semibold uppercase tracking-[0.2em] text-[#f1c5a3]">Meet the maker</p>
-              <h1 className="relative mt-4 text-3xl font-semibold md:text-5xl">{shop.shopName}</h1>
-              <p className="relative mt-3 text-white/75">{shop.city} · Craftosa artisan</p>
+            <section className="relative isolate overflow-hidden rounded-3xl bg-gradient-to-br from-[#633a2b] via-[#8b4c35] to-[#c47b54] text-white shadow-xl shadow-[#75422f]/10">
+              <div className="absolute inset-0 -z-10">
+                {shop.coverImageUrl ? <img src={shop.coverImageUrl} alt="" className="h-full w-full object-cover opacity-45" /> : <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_20%,rgba(243,198,159,0.35),transparent_30%),radial-gradient(circle_at_15%_100%,rgba(232,189,99,0.2),transparent_35%)]" />}
+              </div>
+              <div className="absolute -right-10 -top-20 -z-0 h-64 w-64 rounded-full border-[35px] border-white/10" />
+              <div className="relative px-7 py-10 md:px-12 md:py-14">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#f5d0b1]">Meet the maker · Craftosa artisan</p>
+                <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center">
+                  <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-3xl border-4 border-white/70 bg-[#fff4e8] shadow-xl">
+                    {shop.profileImageUrl ? <img src={shop.profileImageUrl} alt={shop.shopName} className="h-full w-full object-cover" /> : <span className="font-serif text-4xl font-bold text-[#8b4c35]">{shop.shopName.charAt(0).toUpperCase()}</span>}
+                  </div>
+                  <div>
+                    <h1 className="text-3xl font-bold tracking-tight md:text-5xl">{shop.shopName}</h1>
+                    <p className="mt-3 text-white/85">{shop.city} · Craft made with care</p>
+                    {shop.sellerName && <p className="mt-1 text-sm text-white/75">Created by {shop.sellerName}</p>}
+                  </div>
+                </div>
+              </div>
             </section>
 
             <section className="mt-7 grid gap-6 md:grid-cols-[1.4fr_0.6fr]">
