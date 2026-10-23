@@ -28,7 +28,7 @@ export default function ChatConversationPage() {
       if (user.role !== "customer" && user.role !== "seller") { setError("Messaging is available for customer and seller accounts."); setLoading(false); return; }
       setRole(user.role);
       const response = await fetch(`${API_URL}/chat/conversations/${encodeURIComponent(conversationId)}/messages`, { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" });
-      const data: ConversationData | { message?: string } = await response.json().catch(() => ({ messages: [] }));
+      const data: ConversationData | { message?: string } = await response.json().catch(() => ({ message: "Unable to read server response." }));
       if (response.status === 401 || response.status === 403) { router.replace("/login"); return; }
       if (!response.ok) throw new Error("message" in data ? data.message || "Could not load this conversation." : "Could not load this conversation.");
       setMessages(Array.isArray((data as ConversationData).messages) ? (data as ConversationData).messages : []);
