@@ -25,6 +25,12 @@ type ProductForm = {
   category: string;
   stock: string;
   imageUrl: string;
+  imageUrls: string[];
+  materials: string;
+  dimensions: string;
+  weight: string;
+  careInstructions: string;
+  madeToOrder: boolean;
 };
 
 const emptyForm: ProductForm = {
@@ -34,6 +40,12 @@ const emptyForm: ProductForm = {
   category: "",
   stock: "0",
   imageUrl: "",
+  imageUrls: [],
+  materials: "",
+  dimensions: "",
+  weight: "",
+  careInstructions: "",
+  madeToOrder: false,
 };
 
 export default function MyProductsPage() {
@@ -45,6 +57,8 @@ export default function MyProductsPage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
   const loadProducts = useCallback(async () => {
     const token = sessionStorage.getItem("craftosa_access_token");
@@ -89,6 +103,8 @@ export default function MyProductsPage() {
   function startCreate() {
     setEditingId(null);
     setForm(emptyForm);
+    setSelectedFiles([]);
+    setImagePreviews([]);
     setMessage("");
     setError("");
     setShowForm(true);
@@ -103,7 +119,15 @@ export default function MyProductsPage() {
       category: product.category,
       stock: String(product.stock),
       imageUrl: product.imageUrl,
+      imageUrls: product.imageUrls || [product.imageUrl],
+      materials: product.materials || "",
+      dimensions: product.dimensions || "",
+      weight: product.weight || "",
+      careInstructions: product.careInstructions || "",
+      madeToOrder: product.madeToOrder || false,
     });
+    setSelectedFiles([]);
+    setImagePreviews([]);
     setMessage("");
     setError("");
     setShowForm(true);
@@ -124,13 +148,37 @@ export default function MyProductsPage() {
       return;
     }
 
+    let uploadedUrls: string[] = [];
+    try {
+      for (const file of selectedFiles) {
+        const uploadForm = new FormData();
+        uploadForm.append("file", file);
+        const uploadResponse = await fetch(`${API_URL}/products/upload-image`, { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: uploadForm });
+        const uploadData = await uploadResponse.json();
+        if (!uploadResponse.ok) throw new Error(uploadData.message || "Could not upload product image.");
+        uploadedUrls.push(uploadData.imageUrl as string);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not upload product images.");
+      setSaving(false);
+      return;
+    }
+    const allImageUrls = [...form.imageUrls, ...uploadedUrls].filter((url, index, urls) => Boolean(url) && urls.indexOf(url) === index).slice(0, 8);
+    const primaryImageUrl = allImageUrls[0] || form.imageUrl.trim();
+    if (!primaryImageUrl) { setError("Please upload at least one product photo or add an image URL."); setSaving(false); return; }
     const payload = {
       name: form.name.trim(),
       description: form.description.trim(),
       price: Number(form.price),
       category: form.category.trim(),
       stock: Number(form.stock),
-      imageUrl: form.imageUrl.trim(),
+      imageUrl: primaryImageUrl,
+      imageUrls: allImageUrls.length ? allImageUrls : [primaryImageUrl],
+      materials: form.materials.trim(),
+      dimensions: form.dimensions.trim(),
+      weight: form.weight.trim(),
+      careInstructions: form.careInstructions.trim(),
+      madeToOrder: form.madeToOrder,
     };
 
     try {
@@ -164,6 +212,8 @@ export default function MyProductsPage() {
           : "Product added successfully."
       );
       setForm(emptyForm);
+      setSelectedFiles([]);
+      setImagePreviews([]);
       setEditingId(null);
       setShowForm(false);
       await loadProducts();
@@ -367,47 +417,21 @@ export default function MyProductsPage() {
                 />
               </div>
 
-              <div className="md:col-span-2">
-                <label
-                  htmlFor="imageUrl"
-                  className="mb-2 block text-sm font-medium"
-                >
-                  Product image URL
-                </label>
-                <input
-                  id="imageUrl"
-                  type="url"
-                  required
-                  value={form.imageUrl}
-                  onChange={(e) =>
-                    setForm({ ...form, imageUrl: e.target.value })
-                  }
-                  placeholder="https://example.com/your-product.jpg"
-                  className="w-full rounded-xl border border-[#e8dcd1] px-4 py-3 outline-none focus:border-[#a5684e]"
-                />
-                <p className="mt-2 text-xs text-[#918277]">
-                  Use a publicly accessible image URL for now. File uploads
-                  can be added later.
-                </p>
-
-                {form.imageUrl && (
-                  <div className="mt-3">
-                    {/* Preview is only shown for valid absolute URLs. */}
-                    {/^https?:\/\/\S+$/i.test(form.imageUrl) && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={form.imageUrl}
-                        alt="Product preview"
-                        className="h-36 w-36 rounded-xl border border-[#eee5db] object-cover"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
-                        }}
-                      />
-                    )}
-                  </div>
-                )}
+              <div className="md:col-span-2 rounded-2xl border border-dashed border-[#d9c5b5] bg-[#fdfaf7] p-5">
+                <label htmlFor="productPhotos" className="block text-sm font-semibold">Product photos</label>
+                <p className="mt-1 text-xs text-[#918277]">Choose up to 8 JPG, PNG, WebP or GIF images. Maximum 5 MB each.</p>
+                <input id="productPhotos" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple onChange={(event) => { const files = Array.from(event.target.files || []).slice(0, Math.max(0, 8 - form.imageUrls.length)); setSelectedFiles(files); setImagePreviews(files.map((file) => URL.createObjectURL(file))); }} className="mt-4 block w-full cursor-pointer rounded-xl border border-[#e8dcd1] bg-white p-3 text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-[#f3e5da] file:px-4 file:py-2 file:font-semibold file:text-[#713c29]" />
+                {(form.imageUrls.length > 0 || imagePreviews.length > 0) && <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4">
+                  {form.imageUrls.map((url) => <div key={url} className="relative">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={url} alt="Product photo" className="h-24 w-full rounded-xl border border-[#eee5db] object-cover" /><button type="button" aria-label="Remove photo" onClick={() => setForm({ ...form, imageUrls: form.imageUrls.filter((item) => item !== url), imageUrl: form.imageUrl === url ? "" : form.imageUrl })} className="absolute right-1 top-1 rounded-full bg-white px-2 py-1 text-xs text-red-700 shadow">×</button></div>)}
+                  {imagePreviews.map((url) => <div key={url}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={url} alt="New product photo" className="h-24 w-full rounded-xl border border-[#eee5db] object-cover" /></div>)}
+                </div>}
+                <details className="mt-4"><summary className="cursor-pointer text-xs font-medium text-[#8b4c35]">Or use an existing image URL</summary><input id="imageUrl" type="url" value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} placeholder="https://example.com/product.jpg" className="mt-3 w-full rounded-xl border border-[#e8dcd1] bg-white px-4 py-3 outline-none focus:border-[#a5684e]" /></details>
               </div>
-
+              <div><label htmlFor="materials" className="mb-2 block text-sm font-medium">Materials (optional)</label><input id="materials" maxLength={200} value={form.materials} onChange={(e) => setForm({ ...form, materials: e.target.value })} placeholder="e.g. clay, cotton, recycled wood" className="w-full rounded-xl border border-[#e8dcd1] px-4 py-3 outline-none focus:border-[#a5684e]" /></div>
+              <div><label htmlFor="dimensions" className="mb-2 block text-sm font-medium">Dimensions (optional)</label><input id="dimensions" maxLength={100} value={form.dimensions} onChange={(e) => setForm({ ...form, dimensions: e.target.value })} placeholder="e.g. 20 × 12 × 8 cm" className="w-full rounded-xl border border-[#e8dcd1] px-4 py-3 outline-none focus:border-[#a5684e]" /></div>
+              <div><label htmlFor="weight" className="mb-2 block text-sm font-medium">Weight (optional)</label><input id="weight" maxLength={100} value={form.weight} onChange={(e) => setForm({ ...form, weight: e.target.value })} placeholder="e.g. 350 g" className="w-full rounded-xl border border-[#e8dcd1] px-4 py-3 outline-none focus:border-[#a5684e]" /></div>
+              <div><label htmlFor="careInstructions" className="mb-2 block text-sm font-medium">Care instructions (optional)</label><input id="careInstructions" maxLength={1000} value={form.careInstructions} onChange={(e) => setForm({ ...form, careInstructions: e.target.value })} placeholder="e.g. Hand wash gently" className="w-full rounded-xl border border-[#e8dcd1] px-4 py-3 outline-none focus:border-[#a5684e]" /></div>
+              <label className="flex items-center gap-3 rounded-xl border border-[#eee5db] p-4 text-sm md:col-span-2"><input type="checkbox" checked={form.madeToOrder} onChange={(e) => setForm({ ...form, madeToOrder: e.target.checked })} className="h-4 w-4 accent-[#8b4c35]" />This product can be made to order / custom-made</label>
               <div className="md:col-span-2">
                 <label
                   htmlFor="description"
