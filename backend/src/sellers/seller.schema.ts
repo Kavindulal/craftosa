@@ -53,11 +53,6 @@ export class Seller {
   @Prop({ type: String, trim: true, maxlength: 2048, default: '' })
   coverImageUrl!: string;
 
-  @Prop({ type: String, trim: true, maxlength: 2048, default: '' })
-  profileImageUrl!: string;
-
-  @Prop({ type: String, trim: true, maxlength: 2048, default: '' })
-  coverImageUrl!: string;
 
   @Prop({
     type: String,
