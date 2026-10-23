@@ -13,8 +13,12 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
   @Post() @Roles('customer')
   create(@Req() req: AuthenticatedRequest, @Body() dto: CreateOrderDto) { return this.ordersService.create(req.user.userId, dto); }
-  @Get('notifications/mine') @Roles('customer')
-  findNotifications(@Req() req: AuthenticatedRequest) { return this.ordersService.findNotifications(req.user.userId); }
+  @Get('notifications/mine') @Roles('customer', 'seller')
+  findNotifications(@Req() req: AuthenticatedRequest) { return this.ordersService.findNotifications(req.user.userId, req.user.role); }
+  @Patch('notifications/:notificationId/read') @Roles('customer', 'seller')
+  markNotificationRead(@Req() req: AuthenticatedRequest, @Param('notificationId') id: string) { return this.ordersService.markNotificationRead(req.user.userId, req.user.role, id); }
+  @Patch('notifications/read-all') @Roles('customer', 'seller')
+  markAllNotificationsRead(@Req() req: AuthenticatedRequest) { return this.ordersService.markAllNotificationsRead(req.user.userId, req.user.role); }
 
   @Get('mine') @Roles('customer')
   findMine(@Req() req: AuthenticatedRequest) { return this.ordersService.findMine(req.user.userId); }
