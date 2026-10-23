@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { addToCart } from "../../lib/cart";
 import ReviewsSection from "./reviews-section";
 
@@ -29,6 +30,7 @@ const fallbackImage =
   "https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?auto=format&fit=crop&w=900&q=80";
 
 export default function ProductClient({ productId }: { productId: string }) {
+  const router = useRouter();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
@@ -38,6 +40,8 @@ export default function ProductClient({ productId }: { productId: string }) {
   const [isSaved, setIsSaved] = useState(false);
   const [wishlistMessage, setWishlistMessage] = useState("");
   const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [chatLoading, setChatLoading] = useState(false);
+  const [chatError, setChatError] = useState("");
 
   useEffect(() => {
     if (!productId) return;
@@ -140,6 +144,34 @@ export default function ProductClient({ productId }: { productId: string }) {
     } finally {
       setWishlistLoading(false);
     }
+  }
+
+  async function startSellerChat() {
+    const token = sessionStorage.getItem("craftosa_access_token");
+    const rawUser = sessionStorage.getItem("craftosa_user");
+    if (!token || !rawUser) { router.push("/login"); return; }
+    try {
+      const user = JSON.parse(rawUser) as { role?: string };
+      if (user.role !== "customer") {
+        setChatError("Chat with sellers is available from a customer account.");
+        return;
+      }
+    } catch { router.push("/login"); return; }
+    if (!sellerId) { setChatError("Seller information is not available for this product."); return; }
+    setChatLoading(true);
+    setChatError("");
+    try {
+      const response = await fetch(`${API_URL}/chat/conversations`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ sellerId, productId: product?._id }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.message || "Could not start a conversation.");
+      router.push(`/messages/${data.conversationId}`);
+    } catch (err) {
+      setChatError(err instanceof Error ? err.message : "Could not start a conversation.");
+    } finally { setChatLoading(false); }
   }
 
   if (loading) {
@@ -266,6 +298,15 @@ export default function ProductClient({ productId }: { productId: string }) {
                 </div>
                 <span className="text-xl text-[#a45b43]">→</span>
               </Link>
+            )}
+
+            {sellerId && (
+              <div className="mb-7">
+                <button type="button" onClick={startSellerChat} disabled={chatLoading} className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#a45b43] bg-white px-6 py-3.5 text-sm font-semibold text-[#8b4c35] transition hover:bg-[#fff2eb] disabled:opacity-60">
+                  <span aria-hidden="true">✉</span> {chatLoading ? "Opening chat…" : "Chat with seller"}
+                </button>
+                {chatError && <p role="alert" className="mt-2 text-sm text-red-700">{chatError}</p>}
+              </div>
             )}
 
             <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-700">
