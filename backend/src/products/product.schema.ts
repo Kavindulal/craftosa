@@ -32,6 +32,24 @@ export class Product {
   @Prop({ required: true, trim: true })
   imageUrl!: string;
 
+  @Prop({ type: [String], default: [] })
+  imageUrls!: string[];
+
+  @Prop({ trim: true, maxlength: 200 })
+  materials?: string;
+
+  @Prop({ trim: true, maxlength: 100 })
+  dimensions?: string;
+
+  @Prop({ trim: true, maxlength: 100 })
+  weight?: string;
+
+  @Prop({ trim: true, maxlength: 1000 })
+  careInstructions?: string;
+
+  @Prop({ type: Boolean, default: false })
+  madeToOrder!: boolean;
+
   @Prop({
     type: String,
     enum: ProductStatus,
