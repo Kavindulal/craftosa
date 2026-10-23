@@ -10,6 +10,7 @@ import { ProductsService } from './products.service';
 import { Seller, SellerSchema } from '../sellers/seller.schema';
 import { Order, OrderSchema } from '../orders/order.schema';
 import { Review, ReviewSchema } from './review.schema';
+import { Wishlist, WishlistSchema } from './wishlist.schema';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { Review, ReviewSchema } from './review.schema';
       { name: Seller.name, schema: SellerSchema },
       { name: Order.name, schema: OrderSchema },
       { name: Review.name, schema: ReviewSchema },
+      { name: Wishlist.name, schema: WishlistSchema },
     ]),
   ],
   controllers: [ProductsController],
