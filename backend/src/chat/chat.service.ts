@@ -75,11 +75,12 @@ export class ChatService {
 
   async sendMessage(conversationId: string, userId: string, role: string, rawBody: string) {
     const conversation = await this.getConversationForParticipant(conversationId, userId);
-    if (!['customer', 'seller'].includes(role)) throw new ForbiddenException('Chat is available for customer and seller accounts');
+    const senderRole: 'customer' | 'seller' | null = role === 'customer' ? 'customer' : role === 'seller' ? 'seller' : null;
+    if (!senderRole) throw new ForbiddenException('Chat is available for customer and seller accounts');
     const body = String(rawBody || '').trim();
     if (!body || body.length > 2000) throw new BadRequestException('Message must be between 1 and 2000 characters');
-    const message = await this.messageModel.create({ conversationId: conversation._id, senderId: new Types.ObjectId(userId), senderRole: role, body, readAt: null });
-    const isCustomer = role === 'customer';
+    const message = await this.messageModel.create({ conversationId: conversation._id, senderId: new Types.ObjectId(userId), senderRole, body, readAt: null });
+    const isCustomer = senderRole === 'customer';
     await this.conversationModel.updateOne({ _id: conversation._id }, { $set: { lastMessage: body, lastMessageAt: new Date() }, $inc: { [isCustomer ? 'sellerUnreadCount' : 'customerUnreadCount']: 1 } }).exec();
     return message;
   }
