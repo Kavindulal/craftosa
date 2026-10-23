@@ -1,6 +1,9 @@
 
 import {
   IsIn,
+  IsArray,
+  ArrayMaxSize,
+  IsBoolean,
   IsInt,
   IsNumber,
   IsOptional,
@@ -51,6 +54,35 @@ export class UpdateProductDto {
   @MaxLength(2048)
   imageUrl?: string;
 
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(8)
+  @IsUrl({ protocols: ['http', 'https'], require_protocol: true }, { each: true })
+  imageUrls?: string[];
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  materials?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  dimensions?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  weight?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(1000)
+  careInstructions?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  madeToOrder?: boolean;
   @IsOptional()
   @IsIn(['active', 'inactive'])
   status?: 'active' | 'inactive';
