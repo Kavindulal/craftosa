@@ -77,6 +77,50 @@ export class OrdersService {
     await this.notificationModel.create({ recipient: order.customer, role: 'customer', orderId: order._id, title: 'Order status updated', message: `Your order status is now ${order.status}.`, status: order.status });
     return { message: 'Order status updated', order };
   }
+  async getSellerAnalytics(sellerId: string) {
+    if (!Types.ObjectId.isValid(sellerId)) throw new BadRequestException('Invalid seller ID');
+    const [products, orders] = await Promise.all([
+      this.productModel.find({ seller: new Types.ObjectId(sellerId) }).select('status stock name').lean().exec(),
+      this.orderModel.find({ 'items.sellerId': new Types.ObjectId(sellerId) }).sort({ createdAt: -1 }).lean().exec(),
+    ]);
+    const sellerOrders = orders.map(order => {
+      const items = (order.items || []).filter((item: any) => String(item.sellerId) === sellerId);
+      return { ...order, items, sellerSubtotal: Number(items.reduce((sum: number, item: any) => sum + Number(item.lineTotal || 0), 0).toFixed(2)) };
+    }).filter(order => order.items.length > 0);
+    const activeStatuses = ['pending', 'confirmed', 'processing', 'shipped'];
+    const deliveredOrders = sellerOrders.filter(order => order.status === 'delivered');
+    const revenue = deliveredOrders.reduce((sum, order) => sum + order.sellerSubtotal, 0);
+    const monthly = new Map<string, { month: string; sales: number; orders: number }>();
+    for (const order of deliveredOrders) {
+      const date = new Date(order.updatedAt || order.createdAt || Date.now());
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      const label = date.toLocaleDateString('en', { month: 'short', year: '2-digit' });
+      const current = monthly.get(key) || { month: label, sales: 0, orders: 0 };
+      current.sales += order.sellerSubtotal;
+      current.orders += 1;
+      monthly.set(key, current);
+    }
+    const recentOrders = sellerOrders.slice(0, 5).map(order => ({
+      id: String(order._id),
+      customerName: order.customerName,
+      status: order.status,
+      createdAt: order.createdAt,
+      sellerSubtotal: order.sellerSubtotal,
+      itemCount: order.items.reduce((sum: number, item: any) => sum + Number(item.quantity || 0), 0),
+    }));
+    return {
+      totalProducts: products.length,
+      activeProducts: products.filter((product: any) => product.status === ProductStatus.ACTIVE).length,
+      outOfStockProducts: products.filter((product: any) => Number(product.stock || 0) === 0).length,
+      totalOrders: sellerOrders.length,
+      activeOrders: sellerOrders.filter(order => activeStatuses.includes(order.status)).length,
+      pendingOrders: sellerOrders.filter(order => order.status === 'pending').length,
+      deliveredOrders: deliveredOrders.length,
+      revenue: Number(revenue.toFixed(2)),
+      monthlySales: [...monthly.entries()].sort(([a], [b]) => a.localeCompare(b)).slice(-6).map(([, value]) => ({ ...value, sales: Number(value.sales.toFixed(2)) })),
+      recentOrders,
+    };
+  }
   async findAll() { return this.orderModel.find().sort({ createdAt: -1 }).lean().exec(); }
   async updateAdminStatus(orderId: string, dto: UpdateOrderStatusDto) {
     if (!Types.ObjectId.isValid(orderId)) throw new BadRequestException('Invalid order ID');
