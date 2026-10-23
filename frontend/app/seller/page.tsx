@@ -4,6 +4,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import NotificationBell from "../../components/notification-bell";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
@@ -169,6 +170,7 @@ export default function SellerDashboard() {
             </div>
 
             <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+              <NotificationBell />
               <Link
                 href="/seller/settings"
                 className="rounded-xl border border-[#e8dcd1] px-4 py-2.5 text-sm font-medium text-[#785341] transition hover:bg-[#f8f1e9]"
