@@ -3,6 +3,7 @@ import {
   ArrayMinSize,
   IsArray,
   IsString,
+  IsOptional,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -28,4 +29,14 @@ export class UpdateShopDto {
   @MinLength(2)
   @MaxLength(100)
   city: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(2048)
+  profileImageUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(2048)
+  coverImageUrl?: string;
 }
