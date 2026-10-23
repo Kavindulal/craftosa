@@ -12,16 +12,19 @@ type Shop = {
   bio?: string;
   craftTypes?: string[];
   city?: string;
+  profileImageUrl?: string;
+  coverImageUrl?: string;
   status?: string;
 };
 
 export default function SellerSettingsPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ shopName: "", bio: "", craftTypes: "", city: "" });
+  const [form, setForm] = useState({ shopName: "", bio: "", craftTypes: "", city: "", profileImageUrl: "", coverImageUrl: "" });
   const [status, setStatus] = useState("");
   const [hasApplication, setHasApplication] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState<"profile" | "cover" | "">("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
@@ -62,6 +65,8 @@ export default function SellerSettingsPage() {
           bio: shop.bio || "",
           craftTypes: Array.isArray(shop.craftTypes) ? shop.craftTypes.join(", ") : "",
           city: shop.city || "",
+          profileImageUrl: shop.profileImageUrl || "",
+          coverImageUrl: shop.coverImageUrl || "",
         });
         setStatus(shop.status || "");
         setHasApplication(true);
@@ -76,6 +81,25 @@ export default function SellerSettingsPage() {
 
   function updateField(field: keyof typeof form, value: string) {
     setForm((current) => ({ ...current, [field]: value }));
+  }
+
+  async function uploadShopImage(kind: "profile" | "cover", file?: File) {
+    if (!file) return;
+    setError(""); setMessage("");
+    if (!["image/jpeg", "image/png", "image/webp", "image/gif"].includes(file.type)) { setError("Choose a JPG, PNG, WebP, or GIF image."); return; }
+    if (file.size > 5 * 1024 * 1024) { setError("Each image must be 5 MB or smaller."); return; }
+    const token = sessionStorage.getItem("craftosa_access_token");
+    if (!token) { router.replace("/login"); return; }
+    setUploading(kind);
+    try {
+      const body = new FormData(); body.append("file", file);
+      const response = await fetch(`${API_URL}/products/upload-image`, { method: "POST", headers: { Authorization: `Bearer ${token}` }, body });
+      const data = await response.json();
+      if (!response.ok || typeof data.imageUrl !== "string") throw new Error(data.message || "Could not upload image.");
+      updateField(kind === "profile" ? "profileImageUrl" : "coverImageUrl", data.imageUrl);
+      setMessage("Image uploaded. Remember to save shop details to keep the change.");
+    } catch (err) { setError(err instanceof Error ? err.message : "Could not upload image."); }
+    finally { setUploading(""); }
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -94,6 +118,8 @@ export default function SellerSettingsPage() {
         bio: form.bio.trim(),
         craftTypes: form.craftTypes.split(",").map((item) => item.trim()).filter(Boolean),
         city: form.city.trim(),
+        profileImageUrl: form.profileImageUrl.trim(),
+        coverImageUrl: form.coverImageUrl.trim(),
       };
       const headers = {
         "Content-Type": "application/json",
@@ -146,6 +172,8 @@ export default function SellerSettingsPage() {
         bio: shop.bio || "",
         craftTypes: Array.isArray(shop.craftTypes) ? shop.craftTypes.join(", ") : "",
         city: shop.city || "",
+        profileImageUrl: shop.profileImageUrl || "",
+        coverImageUrl: shop.coverImageUrl || "",
       });
       setStatus(shop.status || (hasApplication ? status : "pending"));
       setHasApplication(true);
@@ -175,7 +203,27 @@ export default function SellerSettingsPage() {
             <>
               {error && <div role="alert" className="mb-5 rounded-xl border border-[#efd8c8] bg-[#fff4eb] p-4 text-sm text-[#80452f]">{error}</div>}
               {message && <div role="status" className="mb-5 rounded-xl border border-[#d4e8d3] bg-[#f1f8ef] p-4 text-sm text-[#315f36]">{message}</div>}
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <section className="overflow-hidden rounded-2xl border border-[#ead9ca] bg-[#fffaf5]">
+                  <div className="relative h-36 overflow-hidden bg-gradient-to-r from-[#633a2b] via-[#a85f42] to-[#d6a06c] sm:h-48">
+                    {form.coverImageUrl ? <img src={form.coverImageUrl} alt="Shop cover preview" className="h-full w-full object-cover" /> : <div className="absolute inset-0 flex items-center justify-center gap-4"><span className="h-20 w-20 rounded-full border-[12px] border-white/10" /><span className="h-28 w-28 rounded-full border-[16px] border-[#f1c5a3]/20" /><span className="h-16 w-16 rounded-full border-[10px] border-[#e8bd63]/30" /></div>}
+                    <span className="absolute left-4 top-4 rounded-full bg-black/30 px-3 py-1.5 text-xs font-semibold tracking-wider text-white backdrop-blur">SHOP COVER</span>
+                  </div>
+                  <div className="px-5 pb-5">
+                    <div className="-mt-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                      <div className="flex items-end gap-4">
+                        <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-4 border-[#fffaf5] bg-white shadow-lg">{form.profileImageUrl ? <img src={form.profileImageUrl} alt="Shop profile preview" className="h-full w-full object-cover" /> : <span className="text-3xl font-serif font-bold text-[#a95737]">{form.shopName.trim().charAt(0).toUpperCase() || "C"}</span>}</div>
+                        <div className="pb-1"><p className="font-semibold text-[#573728]">{form.shopName || "Your handmade shop"}</p><p className="mt-1 text-xs text-[#8e7969]">{form.city || "Your city"} · Craftosa seller</p></div>
+                      </div>
+                      <span className="mb-1 inline-flex w-fit items-center gap-2 rounded-full bg-[#e8f4e8] px-3 py-1.5 text-xs font-semibold text-[#47734c]"><span className="h-2 w-2 rounded-full bg-[#5b965f]" /> Branding preview</span>
+                    </div>
+                    <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                      <label className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-[#ead9ca] bg-white p-4 transition hover:border-[#b96e4c] hover:shadow-sm"><span><span className="block text-sm font-semibold">Profile photo</span><span className="mt-1 block text-xs text-[#918277]">Logo or shop image · 5 MB max</span></span><span className="rounded-lg bg-[#f8eee5] px-3 py-2 text-xs font-semibold text-[#8b4c35]">{uploading === "profile" ? "Uploading…" : "Choose"}</span><input className="sr-only" type="file" accept="image/jpeg,image/png,image/webp,image/gif" disabled={Boolean(uploading)} onChange={(e) => { void uploadShopImage("profile", e.target.files?.[0]); e.currentTarget.value = ""; }} /></label>
+                      <label className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-[#ead9ca] bg-white p-4 transition hover:border-[#b96e4c] hover:shadow-sm"><span><span className="block text-sm font-semibold">Cover photo</span><span className="mt-1 block text-xs text-[#918277]">Wide banner · 5 MB max</span></span><span className="rounded-lg bg-[#f8eee5] px-3 py-2 text-xs font-semibold text-[#8b4c35]">{uploading === "cover" ? "Uploading…" : "Choose"}</span><input className="sr-only" type="file" accept="image/jpeg,image/png,image/webp,image/gif" disabled={Boolean(uploading)} onChange={(e) => { void uploadShopImage("cover", e.target.files?.[0]); e.currentTarget.value = ""; }} /></label>
+                    </div>
+                    <p className="mt-3 text-xs text-[#918277]">JPG, PNG, WebP or GIF. Upload images, then save shop details to apply them.</p>
+                  </div>
+                </section>
                 <div>
                   <label htmlFor="shopName" className="text-sm font-semibold">Shop name</label>
                   <input id="shopName" required minLength={2} maxLength={100} value={form.shopName} onChange={(e) => updateField("shopName", e.target.value)} className={inputClass} placeholder="e.g. Test Artisan Studio" />
