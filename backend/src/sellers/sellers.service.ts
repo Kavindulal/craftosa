@@ -46,6 +46,8 @@ export class SellersService {
       bio: dto.bio.trim(),
       craftTypes: dto.craftTypes.map((item) => item.trim()),
       city: dto.city.trim(),
+      profileImageUrl: dto.profileImageUrl?.trim() ?? '',
+      coverImageUrl: dto.coverImageUrl?.trim() ?? '',
       status: SellerStatus.PENDING,
     });
 
@@ -56,6 +58,8 @@ export class SellersService {
         shopName: seller.shopName,
         craftTypes: seller.craftTypes,
         city: seller.city,
+        profileImageUrl: seller.profileImageUrl || '',
+        coverImageUrl: seller.coverImageUrl || '',
         status: seller.status,
         createdAt: seller.createdAt,
       },
@@ -73,7 +77,7 @@ export class SellersService {
         user: new Types.ObjectId(userId),
         status: SellerStatus.APPROVED,
       })
-      .select('user shopName bio craftTypes city status createdAt')
+      .select('user shopName bio craftTypes city status createdAt profileImageUrl coverImageUrl')
       .populate('user', 'name')
       .lean()
       .exec();
@@ -90,6 +94,8 @@ export class SellersService {
       bio: seller.bio,
       craftTypes: seller.craftTypes,
       city: seller.city,
+      profileImageUrl: seller.profileImageUrl || '',
+      coverImageUrl: seller.coverImageUrl || '',
       status: seller.status,
       createdAt: seller.createdAt,
     };
@@ -133,6 +139,8 @@ export class SellersService {
     seller.bio = dto.bio.trim();
     seller.craftTypes = dto.craftTypes.map((item) => item.trim()).filter(Boolean);
     seller.city = dto.city.trim();
+    if (dto.profileImageUrl !== undefined) seller.profileImageUrl = dto.profileImageUrl.trim();
+    if (dto.coverImageUrl !== undefined) seller.coverImageUrl = dto.coverImageUrl.trim();
     await seller.save();
 
     return {
