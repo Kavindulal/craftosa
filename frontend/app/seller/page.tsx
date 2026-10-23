@@ -6,17 +6,18 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import NotificationBell from "../../components/notification-bell";
 import CraftosaLogo from "../../components/craftosa-logo";
+import CraftosaIcon from "../../components/craftosa-icon";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 const menuItems = [
-  { icon: "⌂", label: "Dashboard", href: "/seller" },
-  { icon: "▦", label: "My Products", href: "/seller/products" },
-  { icon: "▤", label: "Orders", href: "/seller/orders" },
-  { icon: "✉", label: "Messages", href: "/messages" },
-  { icon: "⚙", label: "Shop Settings", href: "/seller/settings" },
-];
+  { icon: "dashboard", label: "Dashboard", href: "/seller" },
+  { icon: "products", label: "My Products", href: "/seller/products" },
+  { icon: "orders", label: "Orders", href: "/seller/orders" },
+  { icon: "messages", label: "Messages", href: "/messages" },
+  { icon: "settings", label: "Shop Settings", href: "/seller/settings" },
+] as const;
 
 type SellerUser = { name?: string; email?: string; role?: string; };
 type SellerAnalytics = {
@@ -103,13 +104,13 @@ export default function SellerDashboard() {
                   <Link
                     key={item.label}
                     href={item.href}
-                    className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
+                    className={`group flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
                       active
                         ? "bg-[#8b4c35] text-white shadow-md shadow-[#8b4c35]/10"
                         : "text-[#76675d] hover:bg-[#f8f1e9] hover:text-[#8b4c35]"
                     }`}
                   >
-                    <span className="text-lg">{item.icon}</span>
+                    <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${active ? "bg-white/15 text-white" : "bg-[#f8eee5] text-[#a65d3f] group-hover:bg-[#f0dfd1]"}`}><CraftosaIcon name={item.icon} size={18} /></span>
                     {item.label}
                   </Link>
                 );
@@ -192,13 +193,13 @@ export default function SellerDashboard() {
             )}
 
             {/* Hero */}
-            <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#75422f] via-[#824832] to-[#4e2d22] p-7 text-white shadow-xl shadow-[#75422f]/10 sm:p-10 lg:p-12">
+            <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#693d2c] via-[#8b4c35] to-[#b96e4c] p-7 text-white shadow-xl shadow-[#75422f]/15 sm:p-10 lg:p-12">
               <div className="absolute -right-12 -top-20 h-64 w-64 rounded-full border-[35px] border-white/[0.07]" />
               <div className="absolute right-24 top-10 h-3 w-3 rounded-full bg-[#f1c5a3]/70" />
               <div className="absolute -bottom-24 right-36 h-48 w-48 rounded-full bg-[#d5a17e]/10" />
 
               <div className="relative max-w-2xl">
-                <span className="inline-flex rounded-full border border-white/25 px-3 py-1.5 text-xs text-[#f2d4bc]">
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-xs text-[#ffdfbf]"><CraftosaIcon name="sparkles" size={14} />
                   YOUR CREATIVE SPACE
                 </span>
 
@@ -232,10 +233,10 @@ export default function SellerDashboard() {
 
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {[
-                  { label: "Total Products", value: loadingProducts ? "..." : String(analytics?.totalProducts ?? productCount ?? "—"), icon: "▧", hint: `${analytics?.activeProducts ?? 0} active` },
-                  { label: "Active Orders", value: loadingProducts ? "..." : String(analytics?.activeOrders ?? "—"), icon: "▤", hint: `${analytics?.pendingOrders ?? 0} pending` },
-                  { label: "Delivered Orders", value: loadingProducts ? "..." : String(analytics?.deliveredOrders ?? "—"), icon: "✓", hint: "Successfully delivered" },
-                  { label: "Revenue", value: loadingProducts ? "..." : analytics ? `Rs. ${money(analytics.revenue)}` : "—", icon: "↗", hint: "From delivered orders" },
+                  { label: "Total Products", value: loadingProducts ? "..." : String(analytics?.totalProducts ?? productCount ?? "—"), icon: "products", tone: "orange", hint: `${analytics?.activeProducts ?? 0} active` },
+                  { label: "Active Orders", value: loadingProducts ? "..." : String(analytics?.activeOrders ?? "—"), icon: "orders", tone: "blue", hint: `${analytics?.pendingOrders ?? 0} pending` },
+                  { label: "Delivered Orders", value: loadingProducts ? "..." : String(analytics?.deliveredOrders ?? "—"), icon: "check", tone: "green", hint: "Successfully delivered" },
+                  { label: "Revenue", value: loadingProducts ? "..." : analytics ? `Rs. ${money(analytics.revenue)}` : "—", icon: "trend", tone: "purple", hint: "From delivered orders" },
                 ].map((stat) => (
                   <article
                     key={stat.label}
@@ -243,9 +244,7 @@ export default function SellerDashboard() {
                   >
                     <div className="flex items-center justify-between gap-3">
                       <p className="text-sm text-[#88796e]">{stat.label}</p>
-                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f8eee5] text-lg text-[#a5684e] transition group-hover:bg-[#8b4c35] group-hover:text-white">
-                        {stat.icon}
-                      </span>
+                      <span className={`flex h-11 w-11 items-center justify-center rounded-2xl transition group-hover:scale-105 ${stat.tone === "orange" ? "bg-[#fff0e5] text-[#c66a3d]" : stat.tone === "blue" ? "bg-[#e9f2ff] text-[#4779b7]" : stat.tone === "green" ? "bg-[#e8f4e8] text-[#47734c]" : "bg-[#f0eaff] text-[#7c62b5]"}`}><CraftosaIcon name={stat.icon} size={21} /></span>
                     </div>
                     <p className="mt-5 break-words text-2xl font-semibold sm:text-3xl">{stat.value}</p>
                     <p className="mt-2 text-xs text-[#a09185]">{stat.hint}</p>
