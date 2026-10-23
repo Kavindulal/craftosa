@@ -17,11 +17,14 @@ const menuItems = [
   { icon: "⚙", label: "Shop Settings", href: "/seller/settings" },
 ];
 
-type SellerUser = {
-  name?: string;
-  email?: string;
-  role?: string;
+type SellerUser = { name?: string; email?: string; role?: string; };
+type SellerAnalytics = {
+  totalProducts: number; activeProducts: number; outOfStockProducts: number;
+  totalOrders: number; activeOrders: number; pendingOrders: number; deliveredOrders: number;
+  revenue: number; monthlySales: { month: string; sales: number; orders: number }[];
+  recentOrders: { id: string; customerName: string; status: string; createdAt?: string; sellerSubtotal: number; itemCount: number }[];
 };
+const money = (value: number) => Number(value || 0).toLocaleString("en-LK", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 export default function SellerDashboard() {
   const router = useRouter();
@@ -29,6 +32,7 @@ export default function SellerDashboard() {
   const [user, setUser] = useState<SellerUser | null>(null);
   const [productCount, setProductCount] = useState<number | null>(null);
   const [loadingProducts, setLoadingProducts] = useState(true);
+  const [analytics, setAnalytics] = useState<SellerAnalytics | null>(null);
   const [notice, setNotice] = useState("");
 
   const loadDashboard = useCallback(async () => {
@@ -49,31 +53,20 @@ export default function SellerDashboard() {
     }
 
     try {
-      const response = await fetch(`${API_URL}/products/mine`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        cache: "no-store",
-      });
-
-      if (response.status === 401 || response.status === 403) {
+      const [productResponse, analyticsResponse] = await Promise.all([
+        fetch(`${API_URL}/products/mine`, { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" }),
+        fetch(`${API_URL}/orders/seller/analytics`, { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" }),
+      ]);
+      if (productResponse.status === 401 || productResponse.status === 403 || analyticsResponse.status === 401 || analyticsResponse.status === 403) {
         setNotice("Your session may have expired. Please sign in again.");
         return;
       }
-
-      if (!response.ok) {
-        throw new Error("Could not load your products.");
-      }
-
-      const products = await response.json();
-
-      if (Array.isArray(products)) {
-        setProductCount(products.length);
-      }
+      if (!productResponse.ok || !analyticsResponse.ok) throw new Error("Could not load live dashboard data.");
+      const [products, data] = await Promise.all([productResponse.json(), analyticsResponse.json()]);
+      if (Array.isArray(products)) setProductCount(products.length);
+      setAnalytics(data as SellerAnalytics);
     } catch {
-      setNotice(
-        "Unable to load live dashboard data. Please check that the backend is running."
-      );
+      setNotice("Unable to load live dashboard data. Please check that the backend is running.");
     } finally {
       setLoadingProducts(false);
     }
@@ -244,16 +237,10 @@ export default function SellerDashboard() {
 
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {[
-                  {
-                    label: "Total Products",
-                    value: loadingProducts
-                      ? "..."
-                      : String(productCount ?? "—"),
-                    icon: "▧",
-                  },
-                  { label: "Active Orders", value: "—", icon: "▤" },
-                  { label: "Custom Requests", value: "—", icon: "✧" },
-                  { label: "Shop Visits", value: "—", icon: "↗" },
+                  { label: "Total Products", value: loadingProducts ? "..." : String(analytics?.totalProducts ?? productCount ?? "—"), icon: "▧", hint: `${analytics?.activeProducts ?? 0} active` },
+                  { label: "Active Orders", value: loadingProducts ? "..." : String(analytics?.activeOrders ?? "—"), icon: "▤", hint: `${analytics?.pendingOrders ?? 0} pending` },
+                  { label: "Delivered Orders", value: loadingProducts ? "..." : String(analytics?.deliveredOrders ?? "—"), icon: "✓", hint: "Successfully delivered" },
+                  { label: "Revenue", value: loadingProducts ? "..." : analytics ? `Rs. ${money(analytics.revenue)}` : "—", icon: "↗", hint: "From delivered orders" },
                 ].map((stat) => (
                   <article
                     key={stat.label}
@@ -265,12 +252,36 @@ export default function SellerDashboard() {
                         {stat.icon}
                       </span>
                     </div>
-                    <p className="mt-5 text-3xl font-semibold">
-                      {stat.value}
-                    </p>
+                    <p className="mt-5 break-words text-2xl font-semibold sm:text-3xl">{stat.value}</p>
+                    <p className="mt-2 text-xs text-[#a09185]">{stat.hint}</p>
                   </article>
                 ))}
               </div>
+            </section>
+
+            {/* Sales analytics */}
+            <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+              <div className="rounded-2xl border border-[#eee5db] bg-white p-6 sm:p-8">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div><h2 className="text-lg font-semibold">Sales overview</h2><p className="mt-1 text-sm text-[#918277]">Monthly revenue from delivered orders.</p></div>
+                  <span className="rounded-full bg-[#f8eee5] px-3 py-1.5 text-xs font-semibold text-[#8b4c35]">Last 6 months</span>
+                </div>
+                {!analytics?.monthlySales.length ? <div className="mt-6 rounded-xl bg-[#faf7f2] p-6 text-sm text-[#918277]">Your sales chart will appear here after orders are delivered.</div> : <div className="mt-7 flex h-48 items-end gap-3 sm:gap-5">{analytics.monthlySales.map((point) => { const max = Math.max(...analytics.monthlySales.map(row => row.sales), 1); const height = Math.max(8, (point.sales / max) * 150); return <div key={point.month} className="flex min-w-0 flex-1 flex-col items-center justify-end gap-2"><span className="max-w-full truncate text-[10px] text-[#8b4c35] sm:text-xs">{point.sales >= 1000 ? `Rs.${(point.sales / 1000).toFixed(1)}k` : `Rs.${Math.round(point.sales)}`}</span><div title={`Rs. ${money(point.sales)}`} className="w-full max-w-12 rounded-t-lg bg-[#a5684e] transition-all" style={{ height: `${height}px` }} /><span className="text-[10px] text-[#918277] sm:text-xs">{point.month}</span></div>; })}</div>}
+                <p className="mt-4 text-xs text-[#a09185]">Revenue is calculated from delivered items in your shop only.</p>
+              </div>
+              <div className="rounded-2xl border border-[#eee5db] bg-white p-6 sm:p-8">
+                <div className="flex items-center justify-between gap-3"><div><h2 className="text-lg font-semibold">Inventory snapshot</h2><p className="mt-1 text-sm text-[#918277]">Keep your product stock ready.</p></div><span className="text-2xl">▦</span></div>
+                <div className="mt-6 grid grid-cols-2 gap-3">
+                  <div className="rounded-xl bg-[#faf7f2] p-4"><p className="text-sm text-[#918277]">Active products</p><p className="mt-2 text-2xl font-semibold">{analytics?.activeProducts ?? "—"}</p></div>
+                  <div className="rounded-xl bg-[#fff4eb] p-4"><p className="text-sm text-[#918277]">Out of stock</p><p className="mt-2 text-2xl font-semibold">{analytics?.outOfStockProducts ?? "—"}</p></div>
+                </div>
+                <Link href="/seller/products" className="mt-5 inline-flex text-sm font-semibold text-[#8b4c35] hover:underline">Manage inventory →</Link>
+              </div>
+            </section>
+
+            <section className="rounded-2xl border border-[#eee5db] bg-white p-6 sm:p-8">
+              <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-semibold">Recent orders</h2><p className="mt-1 text-sm text-[#918277]">Latest orders containing your products.</p></div><Link href="/seller/orders" className="text-sm font-semibold text-[#8b4c35] hover:underline">Manage orders →</Link></div>
+              {!analytics?.recentOrders.length ? <p className="mt-6 rounded-xl bg-[#faf7f2] p-5 text-sm text-[#918277]">No orders yet. When customers order your products, they will appear here.</p> : <div className="mt-5 divide-y divide-[#f0e8e0]">{analytics.recentOrders.map(order => <div key={order.id} className="flex flex-wrap items-center justify-between gap-3 py-4"><div className="min-w-0"><p className="font-medium">{order.customerName}</p><p className="mt-1 text-xs text-[#918277]">{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : "Date unavailable"} · {order.itemCount} item(s)</p><p className="mt-1 break-all text-[11px] text-[#a09185]">#{order.id}</p></div><div className="text-right"><p className="font-semibold">Rs. {money(order.sellerSubtotal)}</p><span className="mt-1 inline-block rounded-full bg-[#f8eee5] px-2.5 py-1 text-xs capitalize text-[#8b4c35]">{order.status}</span></div></div>)}</div>}
             </section>
 
             {/* Shop setup */}
