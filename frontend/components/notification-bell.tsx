@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import CraftosaIcon from "./craftosa-icon";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 type Notice = { _id: string; orderId?: string | null; conversationId?: string | null; type?: 'order' | 'chat'; title: string; message: string; read: boolean; status?: string; createdAt: string };
@@ -57,7 +58,7 @@ export default function NotificationBell() {
 
   return <div className="relative">
     <button type="button" onClick={() => setOpen(value => !value)} aria-label={`Notifications, ${unread} unread`} aria-expanded={open} className="relative inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[#e8dcd1] text-xl text-[#785341] transition hover:bg-[#f8f1e9]">
-      🔔
+      <CraftosaIcon name="bell" size={20} />
       {unread > 0 && <span className="absolute -right-1 -top-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">{unread > 99 ? "99+" : unread}</span>}
     </button>
     {open && typeof document !== "undefined" && createPortal(<div className="fixed right-4 top-20 z-[9999] w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-[#eee2d7] bg-white text-[#34251e] shadow-xl sm:right-6">
