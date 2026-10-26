@@ -3,6 +3,7 @@
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
+import { ArrowLeft, X } from "lucide-react";
 import CraftosaLogo from "../../../components/craftosa-logo";
 
 const API_URL =
@@ -273,7 +274,7 @@ export default function MyProductsPage() {
             href="/seller"
             className="text-sm font-medium text-[#a5684e] hover:underline"
           >
-            ← Back to dashboard
+            <ArrowLeft size={16} className="mr-1.5 inline" /> Back to dashboard
           </Link>
           <h1 className="mt-2 text-2xl font-semibold">My Products</h1>
           <p className="mt-1 text-sm text-[#918277]">
@@ -423,7 +424,7 @@ export default function MyProductsPage() {
                 <p className="mt-1 text-xs text-[#918277]">Choose up to 8 JPG, PNG, WebP or GIF images. Maximum 5 MB each.</p>
                 <input id="productPhotos" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple onChange={(event) => { const files = Array.from(event.target.files || []).slice(0, Math.max(0, 8 - form.imageUrls.length)); setSelectedFiles(files); setImagePreviews(files.map((file) => URL.createObjectURL(file))); }} className="mt-4 block w-full cursor-pointer rounded-xl border border-[#e8dcd1] bg-white p-3 text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-[#f3e5da] file:px-4 file:py-2 file:font-semibold file:text-[#713c29]" />
                 {(form.imageUrls.length > 0 || imagePreviews.length > 0) && <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4">
-                  {form.imageUrls.map((url) => <div key={url} className="relative">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={url} alt="Product photo" className="h-24 w-full rounded-xl border border-[#eee5db] object-cover" /><button type="button" aria-label="Remove photo" onClick={() => setForm({ ...form, imageUrls: form.imageUrls.filter((item) => item !== url), imageUrl: form.imageUrl === url ? "" : form.imageUrl })} className="absolute right-1 top-1 rounded-full bg-white px-2 py-1 text-xs text-red-700 shadow">×</button></div>)}
+                  {form.imageUrls.map((url) => <div key={url} className="relative">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={url} alt="Product photo" className="h-24 w-full rounded-xl border border-[#eee5db] object-cover" /><button type="button" aria-label="Remove photo" onClick={() => setForm({ ...form, imageUrls: form.imageUrls.filter((item) => item !== url), imageUrl: form.imageUrl === url ? "" : form.imageUrl })} className="absolute right-1 top-1 rounded-full bg-white p-1.5 text-red-700 shadow" ><X size={14} /></button></div>)}
                   {imagePreviews.map((url) => <div key={url}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={url} alt="New product photo" className="h-24 w-full rounded-xl border border-[#eee5db] object-cover" /></div>)}
                 </div>}
                 <details className="mt-4"><summary className="cursor-pointer text-xs font-medium text-[#8b4c35]">Or use an existing image URL</summary><input id="imageUrl" type="url" value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} placeholder="https://example.com/product.jpg" className="mt-3 w-full rounded-xl border border-[#e8dcd1] bg-white px-4 py-3 outline-none focus:border-[#a5684e]" /></details>
