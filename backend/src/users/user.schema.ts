@@ -25,6 +25,12 @@ export class User {
   @Prop({ required: true, select: false })
   password: string;
 
+  @Prop({ type: String, select: false })
+  passwordResetTokenHash?: string;
+
+  @Prop({ type: Date, select: false })
+  passwordResetExpires?: Date;
+
   @Prop({
     type: String,
     enum: UserRole,
