@@ -44,9 +44,16 @@ export default function TermsPage() {
           </section>
           <section>
             <h2 className="text-lg font-semibold text-[#35271f]">6. Changes and contact</h2>
-            <p>These are starter terms for the project and are not a substitute for legal advice. Replace or review them with terms appropriate to the final service and applicable law before launch.</p>
+            <p>These are starter terms for the project and are not a substitute for legal advice. Review them for compliance with applicable law before launching the marketplace publicly.</p>
           </section>
         </div>
+        <section className="mt-9 rounded-2xl border border-[#eaded2] bg-white p-5">
+          <h2 className="font-semibold text-[#35271f]">Contact Craftosa</h2>
+          <p className="mt-2 text-sm text-[#81756d]">For questions about these terms, contact Kavindulal.</p>
+          <a href="mailto:kavindulal2003@gmail.com" className="mt-3 block text-sm text-[#8b4c35] hover:underline">kavindulal2003@gmail.com</a>
+          <a href="https://wa.me/94763922749" target="_blank" rel="noreferrer" className="mt-2 block text-sm text-[#8b4c35] hover:underline">WhatsApp: 076 392 2749</a>
+          <Link href="/help" className="mt-4 inline-block text-sm font-semibold text-[#8b4c35] underline underline-offset-4">Help & Contact</Link>
+        </section>
       </article>
       <footer className="border-t border-[#eaded2] bg-white px-5 py-6 text-center text-xs text-[#918277]">© 2026 Craftosa. Crafted with care.</footer>
     </main>
