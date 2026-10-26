@@ -4,6 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import CraftosaLogo from "../components/craftosa-logo";
+import { ArrowRight, Heart, LogIn, LogOut, MessageCircle, Search, ShieldCheck, ShoppingCart, Store, UserRound } from "lucide-react";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
@@ -154,8 +155,8 @@ export default function MarketplacePage() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <Link href="/cart" className="rounded-xl px-3 py-2 text-sm font-semibold text-[#8b4c35] hover:bg-[#f8eee5]">🛒 Cart</Link>
-            {signedInUser?.role === "customer" && <><Link href="/wishlist" className="rounded-xl px-3 py-2 text-sm font-semibold text-[#8b4c35] hover:bg-[#f8eee5]">♡ Wishlist</Link><Link href="/messages" className="rounded-xl px-3 py-2 text-sm font-semibold text-[#8b4c35] hover:bg-[#f8eee5]">✉ Messages</Link></>}
+            <Link href="/cart" className="rounded-xl px-3 py-2 text-sm font-semibold text-[#8b4c35] hover:bg-[#f8eee5]"><ShoppingCart size={17} className="mr-1.5 inline" />Cart</Link>
+            {signedInUser?.role === "customer" && <><Link href="/wishlist" className="rounded-xl px-3 py-2 text-sm font-semibold text-[#8b4c35] hover:bg-[#f8eee5]"><Heart size={17} className="mr-1.5 inline" />Wishlist</Link><Link href="/messages" className="rounded-xl px-3 py-2 text-sm font-semibold text-[#8b4c35] hover:bg-[#f8eee5]"><MessageCircle size={17} className="mr-1.5 inline" />Messages</Link></>}
             {signedInUser ? (
               <>
                 {signedInUser.role === "seller" ? (
@@ -236,7 +237,7 @@ export default function MarketplacePage() {
             href="#shop"
             className="mt-7 inline-flex rounded-xl bg-[#8b4c35] px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#713b29]"
           >
-            Explore the collection →
+            Explore the collection <ArrowRight size={17} className="ml-2 inline" />
           </a>
 
           <div className="mt-8 flex items-center gap-3 text-sm text-[#85766b]">
@@ -313,7 +314,7 @@ export default function MarketplacePage() {
           </div>
 
           <label className="flex w-full items-center gap-3 rounded-xl border border-[#e8dcd1] bg-white px-4 py-3 sm:max-w-sm">
-            <span aria-hidden="true">⌕</span>
+            <Search size={19} className="shrink-0 text-[#a5684e]" aria-hidden="true" />
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
@@ -345,7 +346,7 @@ export default function MarketplacePage() {
 
         {!loading && !error && filteredProducts.length === 0 && (
           <div className="mt-8 rounded-2xl border border-dashed border-[#dfcfc1] bg-white px-6 py-16 text-center">
-            <span className="text-4xl">✧</span>
+            <Heart size={34} className="mx-auto text-[#b85f45]" aria-hidden="true" />
             <h3 className="mt-4 text-lg font-semibold">
               No products found just yet
             </h3>
