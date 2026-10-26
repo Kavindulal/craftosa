@@ -48,6 +48,20 @@ export class AuthController {
     );
   }
 
+  // POST /auth/forgot-password - send a single-use password reset link.
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  forgotPassword(@Body() body: { email: string }) {
+    return this.authService.requestPasswordReset(body.email);
+  }
+
+  // POST /auth/reset-password - consume a reset token and save a new password.
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  resetPassword(@Body() body: { token: string; password: string }) {
+    return this.authService.resetPassword(body.token, body.password);
+  }
+
   // GET /auth/profile - retrieve the saved profile for the signed-in user.
   @Get('profile')
   @UseGuards(JwtAuthGuard)
