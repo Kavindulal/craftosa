@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Leaf } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -136,7 +137,7 @@ export default function AdminDashboardPage() {
           <div className="mt-6 rounded-2xl border border-[#eee2d7] bg-white p-8 text-stone-500">Loading seller applications…</div>
         ) : applications.length === 0 ? (
           <div className="mt-6 rounded-2xl border border-[#eee2d7] bg-white px-6 py-12 text-center">
-            <div className="text-4xl">🌿</div>
+            <Leaf size={38} className="mx-auto text-[#b85f45]" aria-hidden="true" />
             <h3 className="mt-4 text-lg font-semibold">No pending applications</h3>
             <p className="mt-2 text-sm text-stone-500">When a seller submits an application, it will appear here.</p>
           </div>
