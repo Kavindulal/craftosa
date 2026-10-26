@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 
@@ -8,7 +8,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 type Message = { _id: string; body: string; senderRole: string; createdAt?: string; readAt?: string | null };
 type ConversationData = { conversationId: string; messages: Message[] };
 
-export default function ChatConversationPage() {
+function ChatConversationContent() {
   const params = useParams<{ conversationId: string }>();
   const conversationId = params.conversationId;
   const router = useRouter();
@@ -100,5 +100,13 @@ export default function ChatConversationPage() {
         </form>
       </section>
     </main>
+  );
+}
+
+export default function ChatConversationPage() {
+  return (
+    <Suspense fallback={<main className="flex min-h-screen items-center justify-center bg-[#f8f5ef] text-[#81756d]">Loading conversation…</main>}>
+      <ChatConversationContent />
+    </Suspense>
   );
 }
