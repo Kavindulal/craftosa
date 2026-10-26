@@ -309,17 +309,7 @@ export default function LoginPage() {
               Create an account
             </a>
 
-            <p className="mt-8 text-center text-xs leading-5 text-[#a69a90]">
-              By continuing, you agree to our{" "}
-              <a href="/terms" className="underline underline-offset-4">
-                Terms
-              </a>{" "}
-              and{" "}
-              <a href="/privacy" className="underline underline-offset-4">
-                Privacy Policy
-              </a>
-              .
-            </p>
+            
           </div>
         </section>
       </div>
