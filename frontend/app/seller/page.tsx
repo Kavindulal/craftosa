@@ -99,35 +99,21 @@ export default function SellerDashboard() {
             {menuItems.map((item) => {
               const active = item.label === "Dashboard";
 
-              if (item.href) {
-                return (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    className={`group flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
-                      active
-                        ? "bg-[#8b4c35] text-white shadow-md shadow-[#8b4c35]/10"
-                        : "text-[#76675d] hover:bg-[#f8f1e9] hover:text-[#8b4c35]"
-                    }`}
-                  >
-                    <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${active ? "bg-white/15 text-white" : "bg-[#f8eee5] text-[#a65d3f] group-hover:bg-[#f0dfd1]"}`}><CraftosaIcon name={item.icon} size={18} /></span>
-                    {item.label}
-                  </Link>
-                );
-              }
-
               return (
-                <button
+                <Link
                   key={item.label}
-                  type="button"
-                  onClick={() =>
-                    setNotice(`${item.label} will be connected in a later step.`)
-                  }
-                  className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-medium text-[#76675d] transition hover:bg-[#f8f1e9] hover:text-[#8b4c35]"
+                  href={item.href}
+                  className={`group flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
+                    active
+                      ? "bg-[#8b4c35] text-white shadow-md shadow-[#8b4c35]/10"
+                      : "text-[#76675d] hover:bg-[#f8f1e9] hover:text-[#8b4c35]"
+                  }`}
                 >
-                  <span className="text-lg">{item.icon}</span>
+                  <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${active ? "bg-white/15 text-white" : "bg-[#f8eee5] text-[#a65d3f] group-hover:bg-[#f0dfd1]"}`}>
+                    <CraftosaIcon name={item.icon} size={18} />
+                  </span>
                   {item.label}
-                </button>
+                </Link>
               );
             })}
           </nav>
