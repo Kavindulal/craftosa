@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { MessageCircle, ChevronRight } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 type Participant = { _id?: string; name?: string };
@@ -77,7 +78,7 @@ export default function MessagesInboxPage() {
         {error && <p role="alert" className="mt-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">{error}</p>}
         {loading ? <div className="py-20 text-center text-[#81756d]">Loading your conversations…</div> : !error && conversations.length === 0 ? (
           <div className="mt-8 rounded-3xl border border-dashed border-[#dfcfc1] bg-white px-6 py-16 text-center">
-            <div className="text-5xl">✉️</div>
+            <MessageCircle size={42} className="mx-auto text-[#b85f45]" aria-hidden="true" />
             <h2 className="mt-4 text-xl font-semibold">No conversations yet</h2>
             <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#81756d]">{role === "customer" ? "Open a product and choose “Chat with seller” to ask a question about it." : "When customers message you about your products, your conversations will appear here."}</p>
             {role === "customer" && <Link href="/" className="mt-6 inline-flex rounded-xl bg-[#8b4c35] px-5 py-3 text-sm font-semibold text-white hover:bg-[#713b29]">Explore handmade products →</Link>}
@@ -99,7 +100,7 @@ export default function MessagesInboxPage() {
                     <p className="mt-1 truncate text-sm text-[#81756d]">{conversation.lastMessage || "Conversation started — send a message."}</p>
                   </div>
                   {(conversation.unreadCount || 0) > 0 && <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-[#8b4c35] px-2 text-xs font-bold text-white">{conversation.unreadCount}</span>}
-                  <span className="text-xl text-[#a5684e]">›</span>
+                  <ChevronRight size={20} className="text-[#a5684e]" aria-hidden="true" />
                 </Link>
               );
             })}
