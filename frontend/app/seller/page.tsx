@@ -230,7 +230,7 @@ export default function SellerDashboard() {
                   >
                     <div className="flex items-center justify-between gap-3">
                       <p className="text-sm text-[#88796e]">{stat.label}</p>
-                      <span className={`flex h-11 w-11 items-center justify-center rounded-2xl transition group-hover:scale-105 ${stat.tone === "orange" ? "bg-[#fff0e5] text-[#c66a3d]" : stat.tone === "blue" ? "bg-[#e9f2ff] text-[#4779b7]" : stat.tone === "green" ? "bg-[#e8f4e8] text-[#47734c]" : "bg-[#f0eaff] text-[#7c62b5]"}`}><CraftosaIcon name={stat.icon} size={21} /></span>
+                      <span className={`flex h-11 w-11 items-center justify-center rounded-2xl transition group-hover:scale-105 ${stat.tone === "orange" ? "bg-[#fff0e5] text-[#c66a3d]" : stat.tone === "blue" ? "bg-[#e9f2ff] text-[#4779b7]" : stat.tone === "green" ? "bg-[#e8f4e8] text-[#47734c]" : "bg-[#f0eaff] text-[#7c62b5]"}`}><CraftosaIcon name={stat.icon as "products" | "orders" | "check" | "trend"} size={21} /></span>
                     </div>
                     <p className="mt-5 break-words text-2xl font-semibold sm:text-3xl">{stat.value}</p>
                     <p className="mt-2 text-xs text-[#a09185]">{stat.hint}</p>
