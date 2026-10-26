@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CartItem, readCart, saveCart } from "../lib/cart";
-import { ShoppingCart, PartyPopper, ShoppingBag, Plus, Minus, Trash2, CheckCircle2 } from "lucide-react";
+import { ShoppingCart, PartyPopper, ShoppingBag } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 const money = (amount: number) => amount.toLocaleString("en-LK", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
