@@ -17,23 +17,45 @@ export default function CraftosaLogo({
   className = "",
   tagline = false,
 }: CraftosaLogoProps) {
+  const ink = light ? "#fff8ee" : "#55372d";
+
   return (
-    <Link href={href} aria-label="Craftosa home" className={`group inline-flex items-center gap-3 ${className}`}>
-      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#d7794e] via-[#a95737] to-[#70402d] shadow-lg shadow-[#8b4c35]/20 ring-1 ring-white/60">
-        <svg viewBox="0 0 64 64" role="img" aria-label="Craftosa lotus mark" className="h-10 w-10">
-          <path d="M32 5 C18 17 18 31 32 43 C46 31 46 17 32 5Z" fill="#e8bd63" stroke="#fff1d5" strokeWidth="1.8" strokeLinejoin="round"/>
-          <path d="M8 22 C10 40 21 49 35 48 C31 34 22 25 8 22Z" fill="#f3a078" stroke="#fff1d5" strokeWidth="1.8" strokeLinejoin="round"/>
-          <path d="M56 22 C42 25 33 34 29 48 C43 49 54 40 56 22Z" fill="#9da878" stroke="#fff1d5" strokeWidth="1.8" strokeLinejoin="round"/>
-          <path d="M18 48 C25 55 39 57 48 48" fill="none" stroke="#fff1d5" strokeWidth="2.4" strokeLinecap="round"/>
-          <path d="M32 15 C27 24 28 32 32 37 C36 32 37 24 32 15Z" fill="#a95737"/>
+    <Link
+      href={href}
+      aria-label="Craftosa home"
+      className={`group inline-flex items-center gap-3 ${className}`}
+    >
+      <span className={`relative flex shrink-0 items-center justify-center ${compact ? "h-10 w-10" : "h-12 w-12"}`}>
+        <svg viewBox="0 0 100 100" role="img" aria-label="Craftosa Sri Lankan heritage emblem" className="h-full w-full">
+          <rect x="19" y="19" width="62" height="62" rx="4" fill="none" stroke="#b69a61" strokeWidth="2.4" />
+          <rect x="19" y="19" width="62" height="62" rx="4" fill="none" stroke="#b85f45" strokeWidth="2.4" transform="rotate(45 50 50)" />
+          <g fill="none" stroke="#f0e5d4" strokeWidth="1.4" opacity=".95">
+            <circle cx="50" cy="50" r="24" />
+            <circle cx="50" cy="50" r="19" />
+            <circle cx="50" cy="50" r="14" />
+          </g>
+          <g fill="#f8f2e8" stroke={ink} strokeWidth="2.2" strokeLinejoin="round">
+            <path d="M50 50 C42 34 29 25 21 23 C22 39 32 49 50 50Z" />
+            <path d="M50 50 C58 34 71 25 79 23 C78 39 68 49 50 50Z" />
+            <path d="M50 50 C34 58 25 71 23 79 C39 78 49 68 50 50Z" />
+            <path d="M50 50 C66 58 75 71 77 79 C61 78 51 68 50 50Z" />
+          </g>
+          <circle cx="50" cy="50" r="2.2" fill="#b85f45" />
         </svg>
       </span>
       {!compact && (
         <span className="flex min-w-0 flex-col">
-          <span className={`font-serif text-[1.8rem] leading-none tracking-[-0.045em] ${light ? "text-white" : "text-[#573728]"}`}>
-            Craftosa<span className="text-[#c8784e]">.</span>
+          <span
+            className={`font-serif text-[1.65rem] leading-none tracking-[0.035em] ${light ? "text-white" : "text-[#55372d]"}`}
+            style={{ fontFamily: '"Cinzel", "Times New Roman", serif' }}
+          >
+            CRAFTOSA
           </span>
-          {tagline && <span className={`mt-1.5 text-[9px] font-medium tracking-[0.12em] ${light ? "text-white/75" : "text-[#8e7969]"}`}>WHERE IDEAS BECOME HANDMADE CREATIONS</span>}
+          {tagline && (
+            <span className={`mt-1.5 text-[8px] font-medium tracking-[0.1em] ${light ? "text-white/75" : "text-[#8e7969]"}`}>
+              WHERE IDEAS BECOME HANDMADE CREATIONS
+            </span>
+          )}
         </span>
       )}
     </Link>
