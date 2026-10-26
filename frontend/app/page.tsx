@@ -164,17 +164,6 @@ export default function MarketplacePage() {
             <a href="#our-story" className="transition hover:text-[#a65335]">Our Story</a>
           </nav>
 
-          <label className="hidden min-w-44 max-w-xs flex-1 items-center gap-2 rounded-full border border-[#e8d8c9] bg-[#faf5ef] px-4 py-2.5 lg:flex xl:max-w-sm">
-            <Search size={17} className="shrink-0 text-[#8b4c35]" aria-hidden="true" />
-            <input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search handmade products..."
-              aria-label="Search handmade products"
-              className="w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-[#9b897b]"
-            />
-          </label>
-
           <div className="hidden items-center gap-1.5 md:flex">
             <Link href="/cart" className="inline-flex items-center gap-1.5 rounded-xl px-2.5 py-2.5 text-sm font-semibold text-[#8b4c35] transition hover:bg-[#f7e9dc]">
               <ShoppingCart size={18} /> <span>Cart</span>
@@ -309,9 +298,9 @@ export default function MarketplacePage() {
             <h2 className="mt-2 font-serif text-3xl text-[#39271d] sm:text-4xl">Find your favourite</h2>
             <p className="mt-2 text-sm text-[#8c796c]">Thoughtfully made, ready to be loved.</p>
           </div>
-          <label className="flex w-full items-center gap-3 rounded-xl border border-[#e6d7ca] bg-white px-4 py-3 shadow-sm transition focus-within:border-[#b87556] sm:max-w-sm">
-            <Search size={19} className="shrink-0 text-[#a65335]" aria-hidden="true" />
-            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search handmade products..." aria-label="Search products" className="w-full bg-transparent text-sm outline-none placeholder:text-[#aa9a8d]" />
+          <label className="flex w-full items-center gap-3 rounded-full border border-[#e8d8c9] bg-[#faf5ef] px-4 py-3 transition focus-within:border-[#b87556] sm:max-w-sm">
+            <Search size={19} className="shrink-0 text-[#8b4c35]" aria-hidden="true" />
+            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search handmade products..." aria-label="Search products" className="w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-[#aa9a8d]" />
           </label>
         </div>
 
