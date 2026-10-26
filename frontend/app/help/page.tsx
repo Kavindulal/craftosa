@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Mail, MessageCircle, PackageCheck, ShieldHelp } from "lucide-react";
+import { Mail, MessageCircle, PackageCheck, ShieldQuestion } from "lucide-react";
 import CraftosaLogo from "../../components/craftosa-logo";
 
 export default function HelpPage() {
@@ -14,7 +14,7 @@ export default function HelpPage() {
         </div>
       </header>
       <article className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f1dfd1] text-[#8b4c35]"><ShieldHelp size={24} /></div>
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f1dfd1] text-[#8b4c35]"><ShieldQuestion size={24} /></div>
         <p className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-[#a5684e]">Craftosa · Support</p>
         <h1 className="mt-3 font-serif text-4xl font-semibold">How can we help?</h1>
         <p className="mt-4 text-sm leading-6 text-[#81756d]">Need help with your account, a handmade product, an order, or a custom request? Contact us using the details below.</p>
@@ -25,7 +25,7 @@ export default function HelpPage() {
             <p className="mt-2 text-sm leading-6 text-[#81756d]">For delivery, product details, or custom-made requests, include your order reference (if available) and explain what you need help with.</p>
           </section>
           <section className="rounded-2xl border border-[#eaded2] bg-white p-5">
-            <ShieldHelp size={22} className="text-[#a65335]" />
+            <ShieldQuestion size={22} className="text-[#a65335]" />
             <h2 className="mt-3 font-semibold">Account and privacy</h2>
             <p className="mt-2 text-sm leading-6 text-[#81756d]">For sign-in problems, password reset issues, or privacy questions, contact us. Never send your password or reset token to anyone.</p>
           </section>
