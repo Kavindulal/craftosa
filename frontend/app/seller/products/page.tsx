@@ -17,7 +17,13 @@ type Product = {
   category: string;
   stock: number;
   imageUrl: string;
-  status: "active" | "inactive";
+  imageUrls?: string[];
+  materials?: string;
+  dimensions?: string;
+  weight?: string;
+  careInstructions?: string;
+  madeToOrder?: boolean;
+  status: "active" | "inactive" | "pending" | "rejected";
 };
 
 type ProductForm = {
