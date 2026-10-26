@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { Bell, LogOut, MessageCircle, Package, Store } from "lucide-react";
+import { LogOut, MessageCircle, Package, Store } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import NotificationBell from "../../components/notification-bell";
@@ -173,12 +173,7 @@ export default function ProfilePage() {
               <Link href="/messages" className="inline-flex items-center gap-2 rounded-xl border border-[#e7d9ce] px-3.5 py-2.5 text-sm font-medium text-[#8b4c35] transition hover:bg-[#fbf6f0]">
                 <MessageCircle size={17} /> <span>Messages</span>
               </Link>
-              <Link href="/notifications" className="inline-flex items-center gap-2 rounded-xl border border-[#e7d9ce] px-3.5 py-2.5 text-sm font-medium text-[#8b4c35] transition hover:bg-[#fbf6f0]">
-                <Bell size={17} /> <span>Notifications</span>
-              </Link>
-              <div className="hidden xl:block">
-                <NotificationBell />
-              </div>
+              <NotificationBell />
               <Link href="/" className="inline-flex items-center gap-2 rounded-xl border border-[#ded2c8] bg-white px-3.5 py-2.5 text-sm font-semibold text-[#554137] transition hover:bg-[#fbf6f0]">
                 <Store size={17} /> <span>Marketplace</span>
               </Link>
