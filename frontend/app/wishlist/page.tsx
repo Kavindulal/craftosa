@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Heart, ShoppingCart, X } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -90,7 +91,7 @@ export default function WishlistPage() {
           <Link href="/" className="text-2xl font-bold text-[#8b4c35]">Craftosa<span className="text-stone-700">.</span></Link>
           <div className="flex gap-3">
             <Link href="/" className="rounded-xl border border-[#e8dcd1] px-4 py-2 text-sm font-semibold hover:bg-[#faf4ee]">Marketplace</Link>
-            <Link href="/cart" className="rounded-xl bg-[#8b4c35] px-4 py-2 text-sm font-semibold text-white hover:bg-[#713b29]">🛒 Cart</Link>
+            <Link href="/cart" className="rounded-xl bg-[#8b4c35] px-4 py-2 text-sm font-semibold text-white hover:bg-[#713b29]"><ShoppingCart size={17} className="mr-1.5 inline" />Cart</Link>
           </div>
         </div>
       </header>
@@ -99,7 +100,7 @@ export default function WishlistPage() {
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#a5684e]">Your saved treasures</p>
         <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">My Wishlist <span aria-hidden="true">❤️</span></h1>
+            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">My Wishlist <Heart size={25} className="ml-2 inline text-[#b85f45]" aria-hidden="true" /></h1>
             <p className="mt-2 text-sm text-[#81756d]">Keep the handmade pieces you love in one place.</p>
           </div>
           <span className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#8b4c35]">{items.length} {items.length === 1 ? "item" : "items"}</span>
@@ -112,7 +113,7 @@ export default function WishlistPage() {
           <div className="py-20 text-center text-[#81756d]">Loading your wishlist...</div>
         ) : !error && items.length === 0 ? (
           <div className="mt-8 rounded-3xl border border-dashed border-[#dfcfc1] bg-white px-6 py-16 text-center">
-            <div className="text-5xl">♡</div>
+            <Heart size={42} className="mx-auto text-[#b85f45]" aria-hidden="true" />
             <h2 className="mt-4 text-xl font-semibold">Your wishlist is waiting for something lovely</h2>
             <p className="mt-2 text-sm text-[#81756d]">Browse handmade items and tap the heart to save your favourites.</p>
             <Link href="/" className="mt-6 inline-flex rounded-xl bg-[#8b4c35] px-5 py-3 text-sm font-semibold text-white hover:bg-[#713b29]">Explore the collection →</Link>
@@ -132,7 +133,7 @@ export default function WishlistPage() {
                   <p className={`mt-2 text-sm ${(product.stock || 0) > 0 ? "text-green-700" : "text-red-600"}`}>{(product.stock || 0) > 0 ? `${product.stock} available` : "Out of stock"}</p>
                   <div className="mt-4 flex gap-2">
                     <Link href={`/products/${product._id}`} className="flex-1 rounded-xl bg-[#8b4c35] px-3 py-2.5 text-center text-sm font-semibold text-white hover:bg-[#713b29]">View product</Link>
-                    <button type="button" disabled={removingId === product._id} onClick={() => void removeItem(product._id)} aria-label={`Remove ${product.name} from wishlist`} className="rounded-xl border border-[#e8dcd1] px-4 py-2.5 text-lg text-[#a45b43] hover:bg-[#fff2eb] disabled:opacity-60">{removingId === product._id ? "…" : "♥"}</button>
+                    <button type="button" disabled={removingId === product._id} onClick={() => void removeItem(product._id)} aria-label={`Remove ${product.name} from wishlist`} className="rounded-xl border border-[#e8dcd1] px-4 py-2.5 text-lg text-[#a45b43] hover:bg-[#fff2eb] disabled:opacity-60">{removingId === product._id ? "…" : <X size={18} /> }</button>
                   </div>
                 </div>
               </article>
