@@ -3,7 +3,8 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, Eye, EyeOff, Leaf, UserRound, Sparkles, Bookmark } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, UserRound, Sparkles, Bookmark } from "lucide-react";
+import CraftosaLogo from "../../components/craftosa-logo";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -65,10 +66,7 @@ export default function LoginPage() {
           <img src="/craftosa-hero.png" alt="" className="absolute inset-0 -z-20 h-full w-full object-cover object-center" onError={(event) => { event.currentTarget.src = "https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?auto=format&fit=crop&w=1400&q=85"; }} />
           <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#2b1b12]/55 via-[#4c2d20]/30 to-[#2b1b12]/90" />
           <div className="p-10 xl:p-14">
-            <Link href="/" className="inline-flex items-center gap-3 text-white">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/35 bg-[#f1c5a3]/95 text-[#75422f]"><Leaf size={25} /></span>
-              <span className="font-serif text-2xl tracking-wide">CRAFTOSA<span className="text-[#f1c5a3]">.</span><span className="mt-1 block text-[9px] tracking-[0.2em] text-white/75">HANDMADE WITH HEART</span></span>
-            </Link>
+            <CraftosaLogo light tagline />
           </div>
           <div className="max-w-2xl px-10 pb-12 xl:px-14 xl:pb-14">
             <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/35 bg-white/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-white backdrop-blur"><Sparkles size={14} /> Made by hand. Made with heart.</p>
@@ -82,7 +80,7 @@ export default function LoginPage() {
 
         <section className="flex items-center justify-center px-5 py-10 sm:px-10 lg:px-12 xl:px-20">
           <div className="w-full max-w-md">
-            <Link href="/" className="mb-9 inline-flex items-center gap-2 lg:hidden"><Leaf size={25} className="text-[#9b4e32]" /><span className="font-serif text-2xl tracking-wide text-[#39271d]">CRAFTOSA<span className="text-[#a65e42]">.</span></span></Link>
+            <div className="mb-9 lg:hidden"><CraftosaLogo tagline /></div>
             <div className="mb-8">
               <p className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.24em] text-[#a65335]"><Sparkles size={15} /> Welcome back</p>
               <h2 className="font-serif text-4xl tracking-tight text-[#39271d] sm:text-[2.65rem]">Sign in to Craftosa</h2>
@@ -109,6 +107,11 @@ export default function LoginPage() {
             <div className="my-7 flex items-center gap-4"><div className="h-px flex-1 bg-[#eee3d8]" /><span className="text-[11px] font-semibold uppercase tracking-wider text-[#a69a90]">New to Craftosa?</span><div className="h-px flex-1 bg-[#eee3d8]" /></div>
             <Link href="/register" className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#dfcfc1] px-5 py-3.5 text-sm font-semibold text-[#554137] transition hover:border-[#a65e43] hover:bg-[#fbf2e9]"><UserRound size={17} /> Create an account</Link>
             <p className="mt-7 text-center text-xs leading-5 text-[#a69a90]">By continuing, you agree to our <Link href="/terms" className="underline underline-offset-4">Terms</Link> and <Link href="/privacy" className="underline underline-offset-4">Privacy Policy</Link>.</p>
+            <nav aria-label="Support and legal links" className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-[#8b4c35]">
+              <Link href="/help" className="underline underline-offset-4 hover:text-[#55372d]">Help & Contact</Link>
+              <Link href="/terms" className="underline underline-offset-4 hover:text-[#55372d]">Terms</Link>
+              <Link href="/privacy" className="underline underline-offset-4 hover:text-[#55372d]">Privacy</Link>
+            </nav>
           </div>
         </section>
       </div>
