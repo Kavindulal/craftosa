@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import CraftosaLogo from "../components/craftosa-logo";
-import { ArrowRight, Heart, LogIn, LogOut, MessageCircle, Search, ShieldCheck, ShoppingCart, Store, UserRound } from "lucide-react";
+import { ArrowRight, Heart, MessageCircle, Search, ShoppingCart } from "lucide-react";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
@@ -164,21 +164,21 @@ export default function MarketplacePage() {
                     href="/seller"
                     className="rounded-xl px-3 py-2 text-sm font-medium hover:bg-[#f8eee5]"
                   >
-                    Seller Dashboard
+                    <ShoppingCart size={16} className="mr-1.5 inline" />Seller Dashboard
                   </Link>
                 ) : signedInUser.role === "admin" ? (
                   <Link
                     href="/admin"
                     className="rounded-xl px-3 py-2 text-sm font-medium hover:bg-[#f8eee5]"
                   >
-                    Admin Dashboard
+                    <ShoppingCart size={16} className="mr-1.5 inline" />Admin Dashboard
                   </Link>
                 ) : (
                   <Link
                     href="/profile"
                     className="rounded-xl px-3 py-2 text-sm font-medium hover:bg-[#f8eee5]"
                   >
-                    My Account
+                    <Heart size={16} className="mr-1.5 inline" />My Account
                   </Link>
                 )}
                 <button
