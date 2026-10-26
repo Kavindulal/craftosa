@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
@@ -190,7 +191,7 @@ export default function SellerSettingsPage() {
   return (
     <main className="min-h-screen bg-[#f8f6f1] px-4 py-8 text-[#35271f] sm:px-8">
       <div className="mx-auto max-w-3xl">
-        <Link href="/seller" className="text-sm font-medium text-[#8b4c35] hover:underline">← Back to Seller Dashboard</Link>
+        <Link href="/seller" className="text-sm font-medium text-[#8b4c35] hover:underline"><ArrowLeft size={16} className="mr-1.5 inline" />Back to Seller Dashboard</Link>
         <header className="mt-6 rounded-3xl bg-[#75422f] p-7 text-white sm:p-9">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#f1c5a3]">Seller workspace</p>
           <h1 className="mt-3 text-3xl font-semibold">Shop Settings</h1>
