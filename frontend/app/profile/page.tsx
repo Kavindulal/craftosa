@@ -1,9 +1,11 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { Bell, LogOut, MessageCircle, Package, Store } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import NotificationBell from "../../components/notification-bell";
+import CraftosaLogo from "../../components/craftosa-logo";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -156,26 +158,36 @@ export default function ProfilePage() {
   return (
     <main className="min-h-screen bg-[#f8f5ef] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
-        <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
-          <NotificationBell />
-          <Link href="/my-orders" className="rounded-xl border border-[#e7d9ce] px-4 py-2 text-sm font-medium text-[#8b4c35] hover:bg-white">My Orders</Link>
-          <Link href="/messages" className="rounded-xl border border-[#e7d9ce] px-4 py-2 text-sm font-medium text-[#8b4c35] hover:bg-white">Messages</Link>
-          <Link href="/notifications" className="rounded-xl border border-[#e7d9ce] px-4 py-2 text-sm font-medium text-[#8b4c35] hover:bg-white">Notifications</Link>
-          <Link href="/" className="inline-flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#8b4c35] text-lg font-bold text-white">C</span>
-            <span className="text-2xl font-semibold tracking-tight text-[#34251e]">
-              craftosa<span className="text-[#b86c4d]">.</span>
-            </span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <Link href="/" className="rounded-xl border border-[#ded2c8] bg-white px-4 py-2.5 text-sm font-semibold text-[#554137] hover:bg-[#fbf6f0]">
-              Marketplace
-            </Link>
-            <button onClick={handleLogout} className="rounded-xl border border-[#ded2c8] px-4 py-2.5 text-sm font-semibold text-[#75402e] hover:bg-white">
-              Log out
-            </button>
+        <header className="mb-8 rounded-2xl border border-[#eee4dc] bg-white/90 px-4 py-4 shadow-sm sm:px-5">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+            <div className="flex items-center justify-between gap-4">
+              <CraftosaLogo tagline className="shrink-0" />
+              <div className="xl:hidden">
+                <NotificationBell />
+              </div>
+            </div>
+            <nav aria-label="Account navigation" className="flex flex-wrap items-center gap-2">
+              <Link href="/my-orders" className="inline-flex items-center gap-2 rounded-xl border border-[#e7d9ce] px-3.5 py-2.5 text-sm font-medium text-[#8b4c35] transition hover:bg-[#fbf6f0]">
+                <Package size={17} /> <span>My Orders</span>
+              </Link>
+              <Link href="/messages" className="inline-flex items-center gap-2 rounded-xl border border-[#e7d9ce] px-3.5 py-2.5 text-sm font-medium text-[#8b4c35] transition hover:bg-[#fbf6f0]">
+                <MessageCircle size={17} /> <span>Messages</span>
+              </Link>
+              <Link href="/notifications" className="inline-flex items-center gap-2 rounded-xl border border-[#e7d9ce] px-3.5 py-2.5 text-sm font-medium text-[#8b4c35] transition hover:bg-[#fbf6f0]">
+                <Bell size={17} /> <span>Notifications</span>
+              </Link>
+              <div className="hidden xl:block">
+                <NotificationBell />
+              </div>
+              <Link href="/" className="inline-flex items-center gap-2 rounded-xl border border-[#ded2c8] bg-white px-3.5 py-2.5 text-sm font-semibold text-[#554137] transition hover:bg-[#fbf6f0]">
+                <Store size={17} /> <span>Marketplace</span>
+              </Link>
+              <button type="button" onClick={handleLogout} className="inline-flex items-center gap-2 rounded-xl bg-[#8b4c35] px-3.5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#713c29]">
+                <LogOut size={17} /> <span>Log out</span>
+              </button>
+            </nav>
           </div>
-        </header>
+        </header>/header>
 
         <div className="mb-7">
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#a5684e]">Account settings</p>
