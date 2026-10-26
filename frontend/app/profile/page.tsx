@@ -187,7 +187,7 @@ export default function ProfilePage() {
               </button>
             </nav>
           </div>
-        </header>/header>
+        </header>
 
         <div className="mb-7">
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#a5684e]">Account settings</p>
