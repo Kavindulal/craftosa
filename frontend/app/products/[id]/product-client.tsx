@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { MessageCircle, ShoppingBag } from "lucide-react";
 import { addToCart } from "../../lib/cart";
 import ReviewsSection from "./reviews-section";
 
@@ -303,7 +304,7 @@ export default function ProductClient({ productId }: { productId: string }) {
             {sellerId && (
               <div className="mb-7">
                 <button type="button" onClick={startSellerChat} disabled={chatLoading} className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#a45b43] bg-white px-6 py-3.5 text-sm font-semibold text-[#8b4c35] transition hover:bg-[#fff2eb] disabled:opacity-60">
-                  <span aria-hidden="true">✉</span> {chatLoading ? "Opening chat…" : "Chat with seller"}
+                  <MessageCircle size={17} aria-hidden="true" /> {chatLoading ? "Opening chat…" : "Chat with seller"}
                 </button>
                 {chatError && <p role="alert" className="mt-2 text-sm text-red-700">{chatError}</p>}
               </div>
@@ -397,17 +398,32 @@ export default function ProductClient({ productId }: { productId: string }) {
               </p>
             </div>
 
-            <button
-              type="button"
-              disabled={!inStock}
-              onClick={() => {
-                addToCart({ productId: product._id, name: product.name, price: Number(product.price), imageUrl: product.imageUrl || fallbackImage, stock: product.stock }, quantity);
-                setCartMessage("Added to your cart successfully.");
-              }}
-              className="mt-7 w-full rounded-full bg-[#a45b43] px-7 py-4 font-semibold text-white shadow-sm transition hover:bg-[#87452f] disabled:cursor-not-allowed disabled:bg-stone-400"
-            >
-              {inStock ? "Add to Cart" : "Out of Stock"}
-            </button>
+            <div className="mt-7 grid gap-3 sm:grid-cols-2">
+              <button
+                type="button"
+                disabled={!inStock}
+                onClick={() => {
+                  addToCart({ productId: product._id, name: product.name, price: Number(product.price), imageUrl: product.imageUrl || fallbackImage, stock: product.stock }, quantity);
+                  setCartMessage("Added to your cart successfully.");
+                }}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#a45b43] px-6 py-4 font-semibold text-white shadow-sm transition hover:bg-[#87452f] disabled:cursor-not-allowed disabled:bg-stone-400"
+              >
+                <ShoppingBag size={18} aria-hidden="true" />
+                {inStock ? "Add to Cart" : "Out of Stock"}
+              </button>
+              <button
+                type="button"
+                disabled={!inStock}
+                onClick={() => {
+                  addToCart({ productId: product._id, name: product.name, price: Number(product.price), imageUrl: product.imageUrl || fallbackImage, stock: product.stock }, quantity);
+                  router.push("/cart");
+                }}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#a45b43] bg-white px-6 py-4 font-semibold text-[#8b4c35] transition hover:bg-[#fff2eb] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <ShoppingBag size={18} aria-hidden="true" />
+                Buy Now
+              </button>
+            </div>
             {cartMessage && <div role="status" className="mt-3 rounded-xl bg-green-50 p-3 text-sm text-green-800">{cartMessage} <Link href="/cart" className="font-semibold underline">View cart</Link></div>}
             <Link href="/cart" className="mt-4 block text-center text-sm font-semibold text-[#8b4c35]">View shopping cart →</Link>
 
