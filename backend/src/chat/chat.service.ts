@@ -29,6 +29,34 @@ export class ChatService {
     if (!Types.ObjectId.isValid(userId)) throw new BadRequestException('Invalid user ID');
     if (!['customer', 'seller'].includes(role)) throw new ForbiddenException('Chat is available for customer and seller accounts');
     const filter = role === 'customer' ? { customerId: new Types.ObjectId(userId) } : { sellerId: new Types.ObjectId(userId) };
+
+    // Consolidate legacy per-product conversations into one conversation per customer/seller pair.
+    const rawConversations = await this.conversationModel.find(filter).sort({ lastMessageAt: -1, createdAt: -1 }).exec();
+    const groups = new Map<string, ChatConversationDocument[]>();
+    for (const conversation of rawConversations) {
+      const pairKey = `${String(conversation.customerId)}:${String(conversation.sellerId)}`;
+      const group = groups.get(pairKey) || [];
+      group.push(conversation);
+      groups.set(pairKey, group);
+    }
+
+    for (const group of groups.values()) {
+      if (group.length < 2) continue;
+      const [primary, ...duplicates] = group;
+      const duplicateIds = duplicates.map((item) => item._id);
+      await this.messageModel.updateMany({ conversationId: { $in: duplicateIds } }, { $set: { conversationId: primary._id } }).exec();
+      const customerUnreadCount = group.reduce((sum, item) => sum + (item.customerUnreadCount || 0), 0);
+      const sellerUnreadCount = group.reduce((sum, item) => sum + (item.sellerUnreadCount || 0), 0);
+      const newest = group.reduce((latest, item) => item.lastMessageAt > latest.lastMessageAt ? item : latest, primary);
+      await this.conversationModel.updateOne({ _id: primary._id }, { $set: {
+        customerUnreadCount,
+        sellerUnreadCount,
+        lastMessage: newest.lastMessage || primary.lastMessage,
+        lastMessageAt: newest.lastMessageAt,
+      } }).exec();
+      await this.conversationModel.deleteMany({ _id: { $in: duplicateIds } }).exec();
+    }
+
     const conversations = await this.conversationModel.find(filter).sort({ lastMessageAt: -1 }).populate('customerId', 'name').populate('sellerId', 'name').populate('productId', 'name imageUrl price').lean().exec();
     return conversations.map((item: any) => ({
       ...item,
@@ -50,7 +78,8 @@ export class ChatService {
       if (!product) throw new BadRequestException('The selected product is not available from this seller');
       productId = new Types.ObjectId(dto.productId);
     }
-    const filter = { customerId: new Types.ObjectId(customerId), sellerId: new Types.ObjectId(dto.sellerId), productId };
+    // A customer should have one chat with each seller, regardless of which product they opened.
+    const filter = { customerId: new Types.ObjectId(customerId), sellerId: new Types.ObjectId(dto.sellerId) };
     const existing = await this.conversationModel.findOne(filter).exec();
     if (existing) return { conversationId: String(existing._id), existing: true };
     try {
