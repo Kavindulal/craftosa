@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, Eye, EyeOff, Leaf, LogIn, UserRound, Sparkles, Bookmark } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Leaf, UserRound, Sparkles, Bookmark } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
