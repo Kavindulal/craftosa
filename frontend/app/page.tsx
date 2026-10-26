@@ -156,9 +156,7 @@ export default function MarketplacePage() {
     <main className="min-h-screen overflow-x-hidden bg-[#faf6f0] text-[#35271f]">
       <header className="sticky top-0 z-30 border-b border-[#eaded2] bg-[#fffdf9]/95 backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-9">
-          <Link href="/" aria-label="Craftosa home" className="shrink-0">
-            <CraftosaLogo tagline />
-          </Link>
+          <CraftosaLogo tagline className="shrink-0" />
 
           <nav className="hidden items-center gap-6 text-sm font-medium text-[#665247] xl:flex">
             <a href="#shop" className="transition hover:text-[#a65335]">Shop</a>
