@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Product, ProductDocument } from '../products/product.schema';
+import { Product, ProductDocument, ProductStatus } from '../products/product.schema';
 import {
   AdminNotification,
   AdminNotificationDocument,
@@ -49,7 +49,7 @@ export class NotificationsService {
   async findForAdmin() {
     const [notifications, outOfStock] = await Promise.all([
       this.notificationModel.find().sort({ createdAt: -1 }).limit(100).lean().exec(),
-      this.productModel.find({ stock: 0, status: 'active' })
+      this.productModel.find({ stock: 0, status: ProductStatus.ACTIVE })
         .select('_id name seller stock createdAt')
         .sort({ createdAt: -1 }).limit(100).lean().exec(),
     ]);
