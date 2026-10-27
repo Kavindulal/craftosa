@@ -31,3 +31,100 @@ button,
 a {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* Responsive foundation: layout-only rules; no application or API behaviour changes. */
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+body {
+  min-width: 0;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+input,
+select,
+textarea,
+button {
+  max-width: 100%;
+}
+
+input,
+select,
+textarea {
+  min-width: 0;
+}
+
+a,
+button,
+input,
+select,
+textarea {
+  overflow-wrap: anywhere;
+}
+
+pre,
+pre code {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  max-width: 100%;
+}
+
+@media (max-width: 640px) {
+  body {
+    font-size: 15px;
+  }
+
+  h1 {
+    overflow-wrap: anywhere;
+  }
+
+  /* Keep common page containers inside narrow phone viewports. */
+  main,
+  header,
+  footer,
+  section,
+  article {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* Inputs should remain usable without forcing the page wider. */
+  input,
+  select,
+  textarea {
+    width: 100%;
+  }
+
+  /* Long product names, IDs, and URLs must not create horizontal scrolling. */
+  p,
+  li,
+  h2,
+  h3 {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
