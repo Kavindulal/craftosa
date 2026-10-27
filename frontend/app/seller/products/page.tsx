@@ -3,6 +3,7 @@
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ArrowLeft, X } from "lucide-react";
 import CraftosaLogo from "../../../components/craftosa-logo";
 
@@ -57,6 +58,8 @@ const emptyForm: ProductForm = {
 };
 
 export default function MyProductsPage() {
+  const searchParams = useSearchParams();
+  const stockFilter = searchParams.get("stock");
   const [products, setProducts] = useState<Product[]>([]);
   const [form, setForm] = useState<ProductForm>(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -272,6 +275,8 @@ export default function MyProductsPage() {
     }
   }
 
+  const displayedProducts = stockFilter === "out" ? products.filter((product) => Number(product.stock ?? 0) <= 0) : products;
+
   return (
     <main className="min-h-screen bg-[#f8f6f1] text-[#35271f]">
       <header className="flex items-center justify-between border-b border-[#eee5db] bg-white px-5 py-5 sm:px-8">
@@ -286,6 +291,7 @@ export default function MyProductsPage() {
           <p className="mt-1 text-sm text-[#918277]">
             Manage your handmade creations.
           </p>
+          {stockFilter === "out" && <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-[#fff1ef] px-3 py-1.5 text-sm font-medium text-[#a14b42]"><span className="h-2 w-2 rounded-full bg-[#c0392b]" /> Showing out-of-stock products only <Link href="/seller/products" className="ml-1 underline underline-offset-2">Show all</Link></p>}
         </div>
 
         <button
@@ -510,27 +516,18 @@ export default function MyProductsPage() {
             <div className="rounded-2xl border border-[#eee5db] bg-white p-12 text-center text-sm text-[#918277]">
               Loading your products...
             </div>
-          ) : products.length === 0 ? (
+          ) : displayedProducts.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-[#ddcbbc] bg-white px-6 py-14 text-center">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#f8eee5] text-3xl text-[#a5684e]">
                 ♧
               </div>
-              <h3 className="mt-5 text-lg font-semibold">
-                Your collection starts here
-              </h3>
-              <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-[#918277]">
-                Add your first handmade product to start building your shop.
-              </p>
-              <button
-                onClick={startCreate}
-                className="mt-6 rounded-xl bg-[#8b4c35] px-5 py-3 text-sm font-semibold text-white hover:bg-[#713c29]"
-              >
-                + Add your first product
-              </button>
+              <h3 className="mt-5 text-lg font-semibold">{stockFilter === "out" ? "No out-of-stock products" : "Your collection starts here"}</h3>
+              <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-[#918277]">{stockFilter === "out" ? "Great news! All your products currently have stock available." : "Add your first handmade product to start building your shop."}</p>
+              {stockFilter === "out" ? <Link href="/seller/products" className="mt-6 inline-flex rounded-xl border border-[#e8dcd1] px-5 py-3 text-sm font-semibold text-[#8b4c35] hover:bg-[#f8f1e9]">View all products</Link> : <button onClick={startCreate} className="mt-6 rounded-xl bg-[#8b4c35] px-5 py-3 text-sm font-semibold text-white hover:bg-[#713c29]">+ Add your first product</button>}
             </div>
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {products.map((product) => (
+              {displayedProducts.map((product) => (
                 <article
                   key={product._id}
                   className="overflow-hidden rounded-2xl border border-[#eee5db] bg-white transition hover:-translate-y-1 hover:shadow-lg"
