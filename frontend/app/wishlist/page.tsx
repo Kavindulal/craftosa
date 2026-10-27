@@ -1,5 +1,6 @@
 "use client";
 
+import { resolveImageUrl } from "../lib/image-url";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -124,7 +125,7 @@ export default function WishlistPage() {
               <article key={product._id} className="overflow-hidden rounded-2xl border border-[#eee3d8] bg-white shadow-sm">
                 <Link href={`/products/${product._id}`} className="block">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={product.imageUrl || fallbackImage} alt={product.name} onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = fallbackImage; }} className="h-64 w-full object-cover" />
+                  <img src={resolveImageUrl(product.imageUrl) || fallbackImage} alt={product.name} onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = fallbackImage; }} className="h-64 w-full object-cover" />
                 </Link>
                 <div className="p-4">
                   <p className="text-xs uppercase tracking-wider text-[#a5684e]">{product.category || "Handmade"}</p>
