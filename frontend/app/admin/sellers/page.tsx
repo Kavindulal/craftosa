@@ -79,7 +79,7 @@ export default function AdminSellersPage() {
   return <main className="min-h-screen bg-[#faf7f2] text-[#34251e]">
     <header className="border-b border-[#eee2d7] bg-white"><div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-5 md:px-8">
       <Link href="/" className="text-2xl font-bold tracking-tight text-[#8b4c35]">craftosa.</Link>
-      <nav className="flex flex-wrap items-center gap-4 text-sm"><Link href="/admin" className="text-stone-600 hover:text-[#8b4c35]">Seller Applications</Link><Link href="/admin/orders" className="text-stone-600 hover:text-[#8b4c35]">Order Management</Link></nav>
+      <nav className="flex flex-wrap items-center gap-4 text-sm"><Link href="/admin" className="text-stone-600 hover:text-[#8b4c35]">Seller Applications</Link><Link href="/admin/orders" className="text-stone-600 hover:text-[#8b4c35]">Order Management</Link><Link href="/admin/notifications" className="text-stone-600 hover:text-[#8b4c35]">Notifications</Link></nav>
     </div></header>
     <div className="mx-auto max-w-6xl px-5 py-9 md:px-8">
       <Link href="/admin" className="text-sm font-medium text-[#8b4c35] hover:underline">← Back to Admin</Link>
