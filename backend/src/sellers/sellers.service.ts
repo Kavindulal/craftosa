@@ -16,12 +16,15 @@ import {
 } from './seller.schema';
 import { ApplySellerDto } from './dto/apply-seller.dto';
 import { ReviewSellerDto } from './dto/review-seller.dto';
+import { NotificationsService } from '../notifications/notifications.service';
+import { AdminNotificationType } from '../notifications/notification.schema';
 
 @Injectable()
 export class SellersService {
   constructor(
     @InjectModel(Seller.name)
     private readonly sellerModel: Model<SellerDocument>,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   // POST /sellers/apply
@@ -49,6 +52,15 @@ export class SellersService {
       profileImageUrl: dto.profileImageUrl?.trim() ?? '',
       coverImageUrl: dto.coverImageUrl?.trim() ?? '',
       status: SellerStatus.PENDING,
+    });
+
+    await this.notificationsService.create({
+      type: AdminNotificationType.SELLER_APPLICATION,
+      title: 'New seller application',
+      message: `${seller.shopName} submitted a seller application from ${seller.city}.`,
+      targetUrl: '/admin',
+      relatedEntityId: seller._id.toString(),
+      priority: 'high',
     });
 
     return {
