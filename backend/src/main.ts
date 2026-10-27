@@ -23,21 +23,14 @@ async function bootstrap() {
     .split(',')
     .map((origin) => origin.trim().replace(/\/$/, ''))
     .filter(Boolean);
-  const allowedOrigins = new Set([
+  const allowedOrigins = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     ...configuredOrigins,
-  ]);
+  ];
 
   app.enableCors({
-    origin: (origin, callback) => {
-      // Allow requests without an Origin header (e.g. health checks / server-to-server).
-      if (!origin || allowedOrigins.has(origin.replace(/\/$/, ''))) {
-        callback(null, true);
-        return;
-      }
-      callback(new Error('Origin is not allowed by CORS'));
-    },
+    origin: allowedOrigins,
     credentials: true,
   });
 
