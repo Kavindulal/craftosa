@@ -3,7 +3,6 @@
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { ArrowLeft, X } from "lucide-react";
 import CraftosaLogo from "../../../components/craftosa-logo";
 
@@ -58,8 +57,7 @@ const emptyForm: ProductForm = {
 };
 
 export default function MyProductsPage() {
-  const searchParams = useSearchParams();
-  const stockFilter = searchParams.get("stock");
+  const [stockFilter, setStockFilter] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [form, setForm] = useState<ProductForm>(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -105,6 +103,10 @@ export default function MyProductsPage() {
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    setStockFilter(new URLSearchParams(window.location.search).get("stock"));
   }, []);
 
   useEffect(() => {
