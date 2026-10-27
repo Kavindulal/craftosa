@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bell, Store, PackageX, ShieldAlert, MessageSquareWarning, Check, CheckCheck, RefreshCw } from "lucide-react";
+import { Bell, Store, PackageX, ShieldAlert, MessageSquareWarning, Check, CheckCheck, RefreshCw, FileText, Users, Package, Settings, LogOut } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 type Notice = {
@@ -46,7 +46,7 @@ export default function AdminNotificationsPage() {
         headers: { Authorization: `Bearer ${token}` }, cache: "no-store",
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(typeof data.message === "string" ? data.message : "Could not load notifications.");
+      if (!response.ok) throw new Error(typeof data.message === "string" ? (data.message.includes("Cannot GET") ? "The notification API route was not found. Pull the latest backend changes and restart the backend server on port 3001." : data.message) : "Could not load notifications.");
       setItems(Array.isArray(data) ? data : []);
     } catch (e) { setError(e instanceof Error ? e.message : "Could not load notifications."); }
     finally { setLoading(false); }
@@ -89,10 +89,16 @@ export default function AdminNotificationsPage() {
   }
 
   return <main className="min-h-screen bg-[#faf7f2] text-[#34251e]">
-    <header className="border-b border-[#eee2d7] bg-white"><div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-5 md:px-8">
-      <Link href="/" className="text-2xl font-bold tracking-tight text-[#8b4c35]">craftosa.</Link>
-      <nav className="flex flex-wrap items-center gap-4 text-sm"><Link href="/admin" className="text-stone-600 hover:text-[#8b4c35]">Seller Applications</Link><Link href="/admin/sellers" className="text-stone-600 hover:text-[#8b4c35]">Seller Management</Link><Link href="/admin/orders" className="text-stone-600 hover:text-[#8b4c35]">Orders</Link></nav>
-    </div></header>
+    <header className="sticky top-0 z-30 border-b border-[#eee2d7] bg-white/95 backdrop-blur"><div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-4 md:px-8">
+<Link href="/" className="text-2xl font-bold tracking-tight text-[#8b4c35]">craftosa<span className="text-[#c16b4d]">.</span></Link>
+<nav aria-label="Admin navigation" className="flex flex-wrap items-center gap-2 text-sm">
+<Link href="/admin"  className="inline-flex items-center gap-2 rounded-xl px-3 py-2.5 font-medium text-stone-600 transition hover:bg-[#faf7f2] hover:text-[#8b4c35]"><FileText size={17}/><span>Seller Applications</span></Link>
+<Link href="/admin/sellers"  className="inline-flex items-center gap-2 rounded-xl px-3 py-2.5 font-medium text-stone-600 transition hover:bg-[#faf7f2] hover:text-[#8b4c35]"><Users size={17}/><span>Seller Management</span></Link>
+<Link href="/admin/notifications" aria-current="page" className="inline-flex items-center gap-2 rounded-xl px-3 py-2.5 bg-[#f8eee5] font-semibold text-[#8b4c35]"><Bell size={17}/><span>Notifications</span></Link>
+<Link href="/admin/orders"  className="inline-flex items-center gap-2 rounded-xl px-3 py-2.5 font-medium text-stone-600 transition hover:bg-[#faf7f2] hover:text-[#8b4c35]"><Package size={17}/><span>Order Management</span></Link>
+<span className="hidden items-center gap-2 border-l border-[#eadfd3] px-3 text-stone-500 lg:inline-flex"><Settings size={16}/> Admin workspace</span>
+<button onClick={() => { sessionStorage.removeItem("craftosa_access_token"); sessionStorage.removeItem("craftosa_user"); router.replace("/login"); }} className="inline-flex items-center gap-2 rounded-xl border border-[#e8dcd1] px-3 py-2.5 font-medium transition hover:bg-[#faf7f2]"><LogOut size={17}/><span>Sign out</span></button>
+</nav></div></header>
     <div className="mx-auto max-w-6xl px-5 py-9 md:px-8">
       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#a45b43]">Craftosa administration</p>
       <div className="mt-2 flex flex-wrap items-end justify-between gap-4"><div><h1 className="flex items-center gap-3 text-3xl font-semibold"><Bell className="text-[#b85f45]" /> Notifications & Alerts</h1><p className="mt-2 text-stone-500">Monitor seller applications and stock issues that need attention.</p></div>
