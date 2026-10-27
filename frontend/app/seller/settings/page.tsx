@@ -213,7 +213,7 @@ export default function SellerSettingsPage() {
                   <div className="px-5 pb-5">
                     <div className="-mt-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                       <div className="flex items-end gap-4">
-                        <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-4 border-[#fffaf5] bg-white shadow-lg">{form.profileImageUrl ? <img src={form.profileImageUrl} alt="Shop profile preview" className="h-full w-full object-cover" /> : <span className="text-3xl font-serif font-bold text-[#a95737]">{form.shopName.trim().charAt(0).toUpperCase() || "C"}</span>}</div>
+                        <div className="relative z-10 flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-4 border-[#fffaf5] bg-white shadow-lg">{form.profileImageUrl ? <img src={form.profileImageUrl} alt="Shop profile preview" className="h-full w-full object-contain p-1" /> : <span className="text-3xl font-serif font-bold text-[#a95737]">{form.shopName.trim().charAt(0).toUpperCase() || "C"}</span>}</div>
                         <div className="pb-1"><p className="font-semibold text-[#573728]">{form.shopName || "Your handmade shop"}</p><p className="mt-1 text-xs text-[#8e7969]">{form.city || "Your city"} · Craftosa seller</p></div>
                       </div>
                       <span className="mb-1 inline-flex w-fit items-center gap-2 rounded-full bg-[#e8f4e8] px-3 py-1.5 text-xs font-semibold text-[#47734c]"><span className="h-2 w-2 rounded-full bg-[#5b965f]" /> Branding preview</span>
