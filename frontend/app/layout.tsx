@@ -18,7 +18,7 @@ function SiteFooter() {
           <p className="mt-4 max-w-sm text-sm leading-6 text-[#88766a]">
             A handmade marketplace connecting people with unique creations and the makers behind them.
           </p>
-          <p className="mt-4 text-xs text-[#a09185]">© {new Date().getFullYear()} Craftosa. Crafted with care.</p>
+          <p className="mt-4 text-xs text-[#a09185]">© Craftosa. Crafted with care.</p>
         </div>
 
         <div>
