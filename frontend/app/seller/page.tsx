@@ -254,7 +254,7 @@ export default function SellerDashboard() {
                     <p className="mt-1 text-sm text-[#81413b]">{stockCounts.outOfStock} {stockCounts.outOfStock === 1 ? "product is" : "products are"} out of stock. Restock them to make them available to customers again.</p>
                   </div>
                 </div>
-                <Link href="/seller/products" className="inline-flex shrink-0 items-center justify-center rounded-xl bg-[#9e4437] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#81372d]">Update stock →</Link>
+                <Link href="/seller/products?stock=out" className="inline-flex shrink-0 items-center justify-center rounded-xl bg-[#9e4437] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#81372d]">Update stock →</Link>
               </section>
             )}
 
