@@ -237,4 +237,31 @@ export class SellersService {
       },
     };
   }
+
+  // PATCH /sellers/:id/status (admin only). Suspended shops are hidden from public listings.
+  async updateSellerStatus(sellerId: string, status: 'approved' | 'suspended') {
+    if (!Types.ObjectId.isValid(sellerId)) {
+      throw new BadRequestException('Invalid seller ID');
+    }
+    const seller = await this.sellerModel.findById(sellerId).exec();
+    if (!seller) {
+      throw new NotFoundException('Seller not found');
+    }
+    if (seller.status === SellerStatus.PENDING || seller.status === SellerStatus.REJECTED) {
+      throw new BadRequestException('Only approved or suspended sellers can be changed here');
+    }
+    if (status === 'approved' && seller.status !== SellerStatus.SUSPENDED) {
+      throw new ConflictException('This seller is already active');
+    }
+    if (status === 'suspended' && seller.status !== SellerStatus.APPROVED) {
+      throw new ConflictException('Only active sellers can be suspended');
+    }
+    seller.status = status as SellerStatus;
+    await seller.save();
+    return {
+      message: status === 'suspended' ? 'Seller shop suspended' : 'Seller shop reactivated',
+      seller: { id: seller._id.toString(), shopName: seller.shopName, status: seller.status },
+    };
+  }
+
 }
