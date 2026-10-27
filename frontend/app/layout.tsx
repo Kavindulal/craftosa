@@ -34,7 +34,7 @@ function SiteFooter() {
         <div>
           <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-[#a5684e]">Connect</h2>
           <ul className="mt-4 space-y-3 text-sm">
-            <li><a className="transition hover:text-[#a5684e]" href="https://www.linkedin.com/in/kavindu-lal" target="_blank" rel="noreferrer">LinkedIn ↗</a></li>
+            <li><a className="transition hover:text-[#a5684e]" href="https://www.linkedin.com/in/kavindu-lal-0653452b1/" target="_blank" rel="noreferrer">LinkedIn ↗</a></li>
             <li><a className="transition hover:text-[#a5684e]" href="https://github.com/Kavindulal" target="_blank" rel="noreferrer">GitHub ↗</a></li>
             <li><Link className="transition hover:text-[#a5684e]" href="/help">Help & Support</Link></li>
             <li><Link className="transition hover:text-[#a5684e]" href="/privacy">Privacy Policy</Link></li>
