@@ -334,11 +334,7 @@ export default function SellerDashboard() {
               </div>
 
             </section>
-
-            <footer className="pb-4 text-center text-xs text-[#a89a8e]">
-              © 2026 Craftosa · Crafted with care.
-            </footer>
-          </div>
+</div>
         </section>
       </div>
     </main>
