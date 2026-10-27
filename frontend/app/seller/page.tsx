@@ -33,6 +33,7 @@ export default function SellerDashboard() {
 
   const [user, setUser] = useState<SellerUser | null>(null);
   const [productCount, setProductCount] = useState<number | null>(null);
+  const [stockCounts, setStockCounts] = useState({ inStock: 0, lowStock: 0, outOfStock: 0 });
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [analytics, setAnalytics] = useState<SellerAnalytics | null>(null);
   const [notice, setNotice] = useState("");
@@ -65,7 +66,13 @@ export default function SellerDashboard() {
       }
       if (!productResponse.ok || !analyticsResponse.ok) throw new Error("Could not load live dashboard data.");
       const [products, data] = await Promise.all([productResponse.json(), analyticsResponse.json()]);
-      if (Array.isArray(products)) setProductCount(products.length);
+      if (Array.isArray(products)) {
+        setProductCount(products.length);
+        const inStock = products.filter((product: { stock?: number }) => Number(product.stock ?? 0) > 3).length;
+        const lowStock = products.filter((product: { stock?: number }) => Number(product.stock ?? 0) > 0 && Number(product.stock ?? 0) <= 3).length;
+        const outOfStock = products.filter((product: { stock?: number }) => Number(product.stock ?? 0) <= 0).length;
+        setStockCounts({ inStock, lowStock, outOfStock });
+      }
       setAnalytics(data as SellerAnalytics);
     } catch {
       setNotice("Unable to load live dashboard data. Please check that the backend is running.");
@@ -237,6 +244,20 @@ export default function SellerDashboard() {
               </div>
             </section>
 
+            {/* Stock notification */}
+            {!loadingProducts && stockCounts.outOfStock > 0 && (
+              <section role="status" className="flex flex-col gap-3 rounded-2xl border border-[#efc4bd] bg-[#fff1ef] p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-start gap-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-[#bd4439]"><CraftosaIcon name="products" size={20} /></span>
+                  <div>
+                    <h2 className="font-semibold text-[#9e332d]">Stock attention needed</h2>
+                    <p className="mt-1 text-sm text-[#81413b]">{stockCounts.outOfStock} {stockCounts.outOfStock === 1 ? "product is" : "products are"} out of stock. Restock them to make them available to customers again.</p>
+                  </div>
+                </div>
+                <Link href="/seller/products" className="inline-flex shrink-0 items-center justify-center rounded-xl bg-[#9e4437] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#81372d]">Update stock →</Link>
+              </section>
+            )}
+
             {/* Sales analytics */}
             <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
               <div className="rounded-2xl border border-[#eee5db] bg-white p-6 sm:p-8">
@@ -249,9 +270,10 @@ export default function SellerDashboard() {
               </div>
               <div className="rounded-2xl border border-[#eee5db] bg-white p-6 sm:p-8">
                 <div className="flex items-center justify-between gap-3"><div><h2 className="text-lg font-semibold">Inventory snapshot</h2><p className="mt-1 text-sm text-[#918277]">Keep your product stock ready.</p></div><span className="text-2xl">▦</span></div>
-                <div className="mt-6 grid grid-cols-2 gap-3">
-                  <div className="rounded-xl bg-[#faf7f2] p-4"><p className="text-sm text-[#918277]">Active products</p><p className="mt-2 text-2xl font-semibold">{analytics?.activeProducts ?? "—"}</p></div>
-                  <div className="rounded-xl bg-[#fff4eb] p-4"><p className="text-sm text-[#918277]">Out of stock</p><p className="mt-2 text-2xl font-semibold">{analytics?.outOfStockProducts ?? "—"}</p></div>
+                <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <div className="rounded-xl border border-[#d9eadb] bg-[#f0f8f0] p-4"><p className="text-sm text-[#52785a]">In Stock</p><p className="mt-2 text-2xl font-semibold text-[#347448]">{loadingProducts ? "…" : stockCounts.inStock}</p><p className="mt-1 text-xs text-[#66856b]">More than 3 items</p></div>
+                  <div className="rounded-xl border border-[#f0dfb9] bg-[#fff8e8] p-4"><p className="text-sm text-[#99702a]">Low Stock</p><p className="mt-2 text-2xl font-semibold text-[#b7791f]">{loadingProducts ? "…" : stockCounts.lowStock}</p><p className="mt-1 text-xs text-[#a1814a]">1–3 items remaining</p></div>
+                  <div className="rounded-xl border border-[#efc9c4] bg-[#fff1ef] p-4"><p className="text-sm text-[#a14b42]">Out of Stock</p><p className="mt-2 text-2xl font-semibold text-[#c0392b]">{loadingProducts ? "…" : stockCounts.outOfStock}</p><p className="mt-1 text-xs text-[#a46c66]">No items available</p></div>
                 </div>
                 <Link href="/seller/products" className="mt-5 inline-flex text-sm font-semibold text-[#8b4c35] hover:underline">Manage inventory →</Link>
               </div>
