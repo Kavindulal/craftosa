@@ -285,7 +285,7 @@ export default function SellerDashboard() {
             </section>
 
             {/* Shop setup */}
-            <section className="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
+            <section className="grid gap-6">
               <div className="rounded-2xl border border-[#eee5db] bg-white p-6 sm:p-8">
                 <h2 className="text-lg font-semibold">Get your shop ready</h2>
                 <p className="mt-2 text-sm leading-6 text-[#918277]">
@@ -333,31 +333,6 @@ export default function SellerDashboard() {
                 </Link>
               </div>
 
-              <div className="rounded-2xl border border-[#eee5db] bg-white p-6 sm:p-8">
-                <span className="text-2xl">✦</span>
-                <h2 className="mt-4 text-lg font-semibold">
-                  Your craft matters
-                </h2>
-                <p className="mt-3 text-sm leading-6 text-[#918277]">
-                  Craftosa brings customers closer to the people behind
-                  handmade products. Your creative journey starts here.
-                </p>
-
-                <div className="mt-6 rounded-xl bg-[#f8f1e9] p-4">
-                  <p className="text-sm font-medium text-[#75422f]">
-                    Your next step
-                  </p>
-                  <p className="mt-1 text-sm leading-5 text-[#88766a]">
-                    Add your first product and start building your collection.
-                  </p>
-                  <Link
-                    href="/seller/products"
-                    className="mt-4 inline-flex text-sm font-semibold text-[#8b4c35] hover:underline"
-                  >
-                    Open My Products →
-                  </Link>
-                </div>
-              </div>
             </section>
 
             <footer className="pb-4 text-center text-xs text-[#a89a8e]">
