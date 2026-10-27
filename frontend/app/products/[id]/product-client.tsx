@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MessageCircle, ShoppingBag } from "lucide-react";
 import { addToCart } from "../../lib/cart";
+import { resolveImageUrl } from "../../lib/image-url";
 import ReviewsSection from "./reviews-section";
 
 const API_URL =
@@ -216,7 +217,7 @@ export default function ProductClient({ productId }: { productId: string }) {
     );
   }
 
-  const image = product.imageUrl || fallbackImage;
+  const image = resolveImageUrl(product.imageUrl) || fallbackImage;
   const inStock = product.stock > 0;
   const sellerId = typeof product.seller === "string"
     ? product.seller
@@ -403,7 +404,7 @@ export default function ProductClient({ productId }: { productId: string }) {
                 type="button"
                 disabled={!inStock}
                 onClick={() => {
-                  addToCart({ productId: product._id, name: product.name, price: Number(product.price), imageUrl: product.imageUrl || fallbackImage, stock: product.stock }, quantity);
+                  addToCart({ productId: product._id, name: product.name, price: Number(product.price), imageUrl: resolveImageUrl(product.imageUrl) || fallbackImage, stock: product.stock }, quantity);
                   setCartMessage("Added to your cart successfully.");
                 }}
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#a45b43] px-6 py-4 font-semibold text-white shadow-sm transition hover:bg-[#87452f] disabled:cursor-not-allowed disabled:bg-stone-400"
