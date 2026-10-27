@@ -74,7 +74,7 @@ export class NotificationsService {
   async unreadCount() {
     const [stored, stockCount] = await Promise.all([
       this.notificationModel.countDocuments({ isRead: false }).exec(),
-      this.productModel.countDocuments({ stock: 0, status: 'active' }).exec(),
+      this.productModel.countDocuments({ stock: 0, status: ProductStatus.ACTIVE }).exec(),
     ]);
     return { count: stored + stockCount };
   }
