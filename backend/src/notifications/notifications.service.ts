@@ -68,7 +68,7 @@ export class NotificationsService {
     }));
 
     return [...notifications.map((item: any) => ({ ...item, isVirtual: false })), ...stockAlerts]
-      .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      .sort((a: any, b: any) => new Date(String(b.createdAt)).getTime() - new Date(String(a.createdAt)).getTime());
   }
 
   async unreadCount() {
