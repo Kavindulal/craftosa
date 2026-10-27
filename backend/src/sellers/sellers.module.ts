@@ -7,10 +7,12 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Seller, SellerSchema } from './seller.schema';
 import { SellersController } from './sellers.controller';
 import { SellersService } from './sellers.service';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
     AuthModule,
+    NotificationsModule,
     MongooseModule.forFeature([
       {
         name: Seller.name,
