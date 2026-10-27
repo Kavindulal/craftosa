@@ -179,10 +179,12 @@ export default function SellerDashboard() {
             )}
 
             {/* Hero */}
-            <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#693d2c] via-[#8b4c35] to-[#b96e4c] p-7 text-white shadow-xl shadow-[#75422f]/15 sm:p-10 lg:p-12">
-              <div className="absolute -right-12 -top-20 h-64 w-64 rounded-full border-[35px] border-white/[0.07]" />
-              <div className="absolute right-24 top-10 h-3 w-3 rounded-full bg-[#f1c5a3]/70" />
-              <div className="absolute -bottom-24 right-36 h-48 w-48 rounded-full bg-[#d5a17e]/10" />
+            <section
+              className="relative isolate overflow-hidden rounded-3xl bg-[#693d2c] bg-cover bg-center p-7 text-white shadow-xl shadow-[#75422f]/15 sm:p-10 lg:p-12"
+              style={{ backgroundImage: "url('/craftosa-hero.png')" }}
+            >
+              <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#3e241a]/90 via-[#5b3425]/75 to-[#5b3425]/25" />
+              <div className="absolute inset-0 -z-10 bg-[#4c2a1d]/15" />
 
               <div className="relative max-w-2xl">
                 <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-xs text-[#ffdfbf]"><CraftosaIcon name="sparkles" size={14} />
