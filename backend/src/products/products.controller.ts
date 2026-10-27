@@ -103,7 +103,7 @@ export class ProductsController {
   }))
   uploadProductImage(@UploadedFile() file: { filename: string } | undefined) {
     if (!file) throw new BadRequestException('Choose an image to upload.');
-    const baseUrl = process.env.PUBLIC_API_URL || 'http://localhost:3001';
+    const baseUrl = process.env.PUBLIC_API_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:3001';
     return { imageUrl: baseUrl.replace(/\/$/, '') + '/uploads/products/' + file.filename };
   }
   // SELLER ONLY: Create a product.
