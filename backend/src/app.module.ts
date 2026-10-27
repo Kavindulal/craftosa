@@ -10,6 +10,7 @@ import { SellersModule } from './sellers/sellers.module';
 import { ProductsModule } from './products/products.module';
 import { OrdersModule } from './orders/orders.module';
 import { ChatModule } from './chat/chat.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ChatModule } from './chat/chat.module';
     ProductsModule,
     OrdersModule,
     ChatModule,
+    NotificationsModule,
   ],
 
   controllers: [AppController],
