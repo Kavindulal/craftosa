@@ -180,32 +180,28 @@ export default function SellerDashboard() {
 
             {/* Hero */}
             <section
-              className="relative isolate overflow-hidden rounded-3xl bg-[#693d2c] bg-cover bg-center p-7 text-white shadow-xl shadow-[#75422f]/15 sm:p-10 lg:p-12"
+              className="relative isolate overflow-hidden rounded-3xl bg-[#8b4c35] bg-cover bg-center p-7 text-white shadow-xl shadow-[#75422f]/15 sm:p-10 lg:p-12"
               style={{ backgroundImage: "url('/craftosa-hero.png')" }}
             >
-              <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#3e241a]/90 via-[#5b3425]/75 to-[#5b3425]/25" />
-              <div className="absolute inset-0 -z-10 bg-[#4c2a1d]/15" />
+              <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#3e241a]/75 via-[#4b2c20]/45 to-[#4b2c20]/10" />
+              <div className="absolute inset-0 z-0 bg-white/[0.04]" />
 
-              <div className="relative max-w-2xl">
-                <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-xs text-[#ffdfbf]"><CraftosaIcon name="sparkles" size={14} />
-                  YOUR CREATIVE SPACE
-                </span>
-
-                <h2 className="mt-5 max-w-xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
+              <div className="relative z-10 max-w-2xl">
+                <h2 className="max-w-xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
                   Every handmade piece
                   <br className="hidden sm:block" /> has a story.
                 </h2>
 
-                <p className="mt-4 max-w-lg text-sm leading-6 text-white/75">
+                <p className="mt-4 max-w-lg text-sm leading-6 text-white/90 sm:text-base">
                   Welcome to your shop workspace. Manage your creations and
-                  prepare to share them with the Craftosa community.
+                  share them with the Craftosa community.
                 </p>
 
                 <Link
                   href="/seller/products"
-                  className="mt-6 inline-flex items-center rounded-xl bg-[#f1c5a3] px-5 py-3 text-sm font-semibold text-[#563525] transition hover:bg-[#ffdbc0]"
+                  className="mt-6 inline-flex items-center gap-3 rounded-xl bg-[#f1c5a3] px-5 py-3 text-sm font-semibold text-[#563525] shadow-sm transition hover:bg-[#ffdbc0]"
                 >
-                  + Add your first product
+                  Manage My Products <span aria-hidden="true">→</span>
                 </Link>
               </div>
             </section>
