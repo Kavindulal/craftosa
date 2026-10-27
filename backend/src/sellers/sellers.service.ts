@@ -270,6 +270,16 @@ export class SellersService {
     }
     seller.status = status as SellerStatus;
     await seller.save();
+    if (status === 'suspended') {
+      await this.notificationsService.create({
+        type: AdminNotificationType.SELLER_SUSPENDED,
+        title: 'Seller shop suspended',
+        message: `${seller.shopName} was suspended by an administrator.`,
+        targetUrl: '/admin/sellers',
+        relatedEntityId: seller._id.toString(),
+        priority: 'medium',
+      });
+    }
     return {
       message: status === 'suspended' ? 'Seller shop suspended' : 'Seller shop reactivated',
       seller: { id: seller._id.toString(), shopName: seller.shopName, status: seller.status },
