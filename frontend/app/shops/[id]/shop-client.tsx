@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+import { resolveImageUrl } from "../../lib/image-url";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 type ShopProduct = { _id: string; name: string; description: string; price: number; category: string; stock: number; imageUrl: string };
@@ -143,7 +145,7 @@ export default function ShopClient({ userId }: { userId: string }) {
                 <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {products.map((product) => (
                     <Link key={product._id} href={`/products/${product._id}`} className="group overflow-hidden rounded-2xl border border-stone-200 bg-white transition hover:-translate-y-1 hover:shadow-lg">
-                      <div className="aspect-square overflow-hidden bg-stone-100">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={product.imageUrl || "https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?auto=format&fit=crop&w=900&q=80"} alt={product.name} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" /></div>
+                      <div className="aspect-square overflow-hidden bg-stone-100">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={resolveImageUrl(product.imageUrl) || "https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?auto=format&fit=crop&w=900&q=80"} alt={product.name} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" /></div>
                       <div className="p-4"><p className="text-xs font-medium uppercase tracking-wider text-[#a45b43]">{product.category}</p><h3 className="mt-2 line-clamp-2 font-semibold">{product.name}</h3><p className="mt-3 text-lg font-semibold text-[#a45b43]">Rs. {Number(product.price).toLocaleString("en-LK", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p><p className={`mt-2 text-xs ${product.stock > 0 ? "text-green-700" : "text-red-600"}`}>{product.stock > 0 ? "In stock" : "Out of stock"}</p></div>
                     </Link>
                   ))}
