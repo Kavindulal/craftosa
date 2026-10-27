@@ -1,4 +1,3 @@
-
 import { NestFactory } from '@nestjs/core';
 import * as express from 'express';
 import { join } from 'node:path';
@@ -10,7 +9,6 @@ async function bootstrap() {
 
   app.use('/uploads', express.static(join(process.cwd(), 'uploads')));
 
-  // Enable request validation globally
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -19,18 +17,34 @@ async function bootstrap() {
     }),
   );
 
-  // Enable CORS for the Craftosa frontend
+  // Set FRONTEND_URL to the deployed frontend origin in production.
+  // Keep localhost available for local development.
+  const configuredOrigins = (process.env.FRONTEND_URL ?? '')
+    .split(',')
+    .map((origin) => origin.trim().replace(/\/$/, ''))
+    .filter(Boolean);
+  const allowedOrigins = new Set([
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    ...configuredOrigins,
+  ]);
+
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: (origin, callback) => {
+      // Allow requests without an Origin header (e.g. health checks / server-to-server).
+      if (!origin || allowedOrigins.has(origin.replace(/\/$/, ''))) {
+        callback(null, true);
+        return;
+      }
+      callback(new Error('Origin is not allowed by CORS'));
+    },
     credentials: true,
   });
 
-  // Run backend on port 3001
-  await app.listen(process.env.PORT ?? 3001);
+  const port = process.env.PORT ?? 3001;
+  await app.listen(port);
 
-  console.log(
-    `Craftosa API is running at http://localhost:${process.env.PORT ?? 3001}`,
-  );
+  console.log(`Craftosa API is running on port ${port}`);
 }
 
 bootstrap();
