@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import CraftosaLogo from "../components/craftosa-logo";
+import { resolveImageUrl } from "./lib/image-url";
 import {
   ArrowRight,
   Bookmark,
@@ -335,7 +336,7 @@ export default function MarketplacePage() {
           <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredProducts.map((product, index) => {
               const name = product.name || product.title || "Handmade item";
-              const image = product.imageUrl || product.image || fallbackImage;
+              const image = resolveImageUrl(product.imageUrl || product.image) || fallbackImage;
               const id = product._id || product.id || String(index);
               return (
                 <article key={id} className="group overflow-hidden rounded-2xl border border-[#eee3d8] bg-white transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#6f4b35]/10">
