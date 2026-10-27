@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
@@ -26,7 +26,7 @@ type Product = {
 const fallbackImage =
   "https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?auto=format&fit=crop&w=900&q=80";
 
-export default function ProductDetailsPage() {
+function ProductDetailsContent() {
   const params = useParams<{ id: string }>();
   const productId = params.id;
 
@@ -311,5 +311,31 @@ export default function ProductDetailsPage() {
         © 2026 Craftosa. Crafted with care.
       </footer>
     </main>
+  );
+}
+
+
+export default function ProductDetailsPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-[#faf7f2] px-5 py-20">
+          <div className="mx-auto max-w-6xl animate-pulse">
+            <div className="mb-8 h-4 w-40 rounded bg-stone-200" />
+            <div className="grid gap-10 md:grid-cols-2">
+              <div className="aspect-square rounded-3xl bg-stone-200" />
+              <div className="space-y-5 py-4">
+                <div className="h-5 w-24 rounded bg-stone-200" />
+                <div className="h-10 w-3/4 rounded bg-stone-200" />
+                <div className="h-8 w-36 rounded bg-stone-200" />
+                <div className="h-24 rounded bg-stone-200" />
+              </div>
+            </div>
+          </div>
+        </main>
+      }
+    >
+      <ProductDetailsContent />
+    </Suspense>
   );
 }
