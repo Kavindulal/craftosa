@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Leaf } from "lucide-react";
+import { Leaf, FileText, Users, Bell, Package, Settings, LogOut } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -105,15 +105,16 @@ export default function AdminDashboardPage() {
 
   return (
     <main className="min-h-screen bg-[#faf7f2] text-[#34251e]">
-      <header className="border-b border-[#eee2d7] bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 md:px-8">
-          <Link href="/" className="text-2xl font-bold tracking-tight text-[#8b4c35]">craftosa.</Link>
-          <div className="flex items-center gap-3">
-            <Link href="/admin/sellers" className="text-sm font-medium text-[#8b4c35] hover:underline">Seller Management</Link><Link href="/admin/notifications" className="text-sm font-medium text-[#8b4c35] hover:underline">Notifications</Link><Link href="/admin/orders" className="hidden text-sm font-medium text-[#8b4c35] sm:inline">Order Management</Link><span className="hidden text-sm text-stone-500 sm:inline">Admin workspace</span>
-            <button onClick={signOut} className="rounded-xl border border-[#e8dcd1] px-4 py-2 text-sm font-medium hover:bg-[#faf7f2]">Sign out</button>
-          </div>
-        </div>
-      </header>
+      <header className="sticky top-0 z-30 border-b border-[#eee2d7] bg-white/95 backdrop-blur"><div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-4 md:px-8">
+<Link href="/" className="text-2xl font-bold tracking-tight text-[#8b4c35]">craftosa<span className="text-[#c16b4d]">.</span></Link>
+<nav aria-label="Admin navigation" className="flex flex-wrap items-center gap-2 text-sm">
+<Link href="/admin" aria-current="page" className="inline-flex items-center gap-2 rounded-xl px-3 py-2.5 bg-[#f8eee5] font-semibold text-[#8b4c35]"><FileText size={17}/><span>Seller Applications</span></Link>
+<Link href="/admin/sellers"  className="inline-flex items-center gap-2 rounded-xl px-3 py-2.5 font-medium text-stone-600 transition hover:bg-[#faf7f2] hover:text-[#8b4c35]"><Users size={17}/><span>Seller Management</span></Link>
+<Link href="/admin/notifications"  className="inline-flex items-center gap-2 rounded-xl px-3 py-2.5 font-medium text-stone-600 transition hover:bg-[#faf7f2] hover:text-[#8b4c35]"><Bell size={17}/><span>Notifications</span></Link>
+<Link href="/admin/orders"  className="inline-flex items-center gap-2 rounded-xl px-3 py-2.5 font-medium text-stone-600 transition hover:bg-[#faf7f2] hover:text-[#8b4c35]"><Package size={17}/><span>Order Management</span></Link>
+<span className="hidden items-center gap-2 border-l border-[#eadfd3] px-3 text-stone-500 lg:inline-flex"><Settings size={16}/> Admin workspace</span>
+<button onClick={() => { sessionStorage.removeItem("craftosa_access_token"); sessionStorage.removeItem("craftosa_user"); router.replace("/login"); }} className="inline-flex items-center gap-2 rounded-xl border border-[#e8dcd1] px-3 py-2.5 font-medium transition hover:bg-[#faf7f2]"><LogOut size={17}/><span>Sign out</span></button>
+</nav></div></header>
 
       <div className="mx-auto max-w-6xl px-5 py-10 md:px-8">
         <section className="rounded-3xl bg-[#75422f] px-7 py-9 text-white md:px-10">
