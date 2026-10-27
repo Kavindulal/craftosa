@@ -109,7 +109,7 @@ export default function AdminDashboardPage() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 md:px-8">
           <Link href="/" className="text-2xl font-bold tracking-tight text-[#8b4c35]">craftosa.</Link>
           <div className="flex items-center gap-3">
-            <Link href="/admin/sellers" className="text-sm font-medium text-[#8b4c35] hover:underline">Seller Management</Link><Link href="/admin/orders" className="hidden text-sm font-medium text-[#8b4c35] sm:inline">Order Management</Link><span className="hidden text-sm text-stone-500 sm:inline">Admin workspace</span>
+            <Link href="/admin/sellers" className="text-sm font-medium text-[#8b4c35] hover:underline">Seller Management</Link><Link href="/admin/notifications" className="text-sm font-medium text-[#8b4c35] hover:underline">Notifications</Link><Link href="/admin/orders" className="hidden text-sm font-medium text-[#8b4c35] sm:inline">Order Management</Link><span className="hidden text-sm text-stone-500 sm:inline">Admin workspace</span>
             <button onClick={signOut} className="rounded-xl border border-[#e8dcd1] px-4 py-2 text-sm font-medium hover:bg-[#faf7f2]">Sign out</button>
           </div>
         </div>
