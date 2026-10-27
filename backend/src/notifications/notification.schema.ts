@@ -40,4 +40,4 @@ export class AdminNotification {
 }
 
 export const AdminNotificationSchema = SchemaFactory.createForClass(AdminNotification);
-AdminNotificationSchema.index({ type: 1, relatedEntityId: 1 }, { unique: true, sparse: true });
+AdminNotificationSchema.index({ createdAt: -1, isRead: 1 });
