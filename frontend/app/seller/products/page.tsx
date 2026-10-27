@@ -293,7 +293,7 @@ export default function MyProductsPage() {
           <p className="mt-1 text-sm text-[#918277]">
             Manage your handmade creations.
           </p>
-          {stockFilter === "out" && <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-[#fff1ef] px-3 py-1.5 text-sm font-medium text-[#a14b42]"><span className="h-2 w-2 rounded-full bg-[#c0392b]" /> Showing out-of-stock products only <Link href="/seller/products" className="ml-1 underline underline-offset-2">Show all</Link></p>}
+          {stockFilter === "out" && <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-[#fff1ef] px-3 py-1.5 text-sm font-medium text-[#a14b42]"><span className="h-2 w-2 rounded-full bg-[#c0392b]" /> Showing out-of-stock products only <Link href="/seller/products" onClick={() => setStockFilter(null)} className="ml-1 underline underline-offset-2">Show all</Link></p>}
         </div>
 
         <button
