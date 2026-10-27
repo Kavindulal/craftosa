@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { Suspense, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, CheckCircle2, Eye, EyeOff, KeyRound, Sparkles } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const params = useParams<{ token: string }>();
   const router = useRouter();
   const token = params.token;
@@ -74,5 +74,14 @@ export default function ResetPasswordPage() {
         {error && <p role="alert" className="mt-5 rounded-xl border border-[#ead7c9] bg-[#faf1e9] p-4 text-sm leading-6 text-[#75402e]">{error}</p>}
       </div>
     </main>
+  );
+}
+
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<main className="flex min-h-screen items-center justify-center bg-[#f7eee4] px-4 py-10"><p className="text-sm text-[#817064]">Loading password reset page…</p></main>}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }
