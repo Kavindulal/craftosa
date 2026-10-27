@@ -1,6 +1,7 @@
 
 import {
   Body,
+  BadRequestException,
   Controller,
   Get,
   Param,
@@ -92,4 +93,18 @@ export class SellersController {
       dto,
     );
   }
+
+  @Patch(':id/status')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  updateSellerStatus(
+    @Param('id') sellerId: string,
+    @Body('status') status: 'approved' | 'suspended',
+  ) {
+    if (status !== 'approved' && status !== 'suspended') {
+      throw new BadRequestException('Status must be approved or suspended');
+    }
+    return this.sellersService.updateSellerStatus(sellerId, status);
+  }
+
 }
