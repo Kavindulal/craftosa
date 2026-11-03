@@ -3,6 +3,7 @@ import {
   Controller,
   Post,
   Req,
+  Body,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -49,10 +50,10 @@ export class MediaController {
   async upload(
     @Req() req: AuthenticatedRequest,
     @UploadedFile() file: { buffer: Buffer; mimetype: string } | undefined,
-    @Req() request: AuthenticatedRequest,
+    @Body('purpose') purposeValue: string,
   ) {
     if (!file) throw new BadRequestException('Choose an image to upload.');
-    const purpose = String((request as any).body?.purpose || '').trim();
+    const purpose = String(purposeValue || '').trim();
     const config = PURPOSES[purpose];
     if (!config) {
       throw new BadRequestException(`Invalid image purpose. Allowed values: ${Object.keys(PURPOSES).join(', ')}.`);
