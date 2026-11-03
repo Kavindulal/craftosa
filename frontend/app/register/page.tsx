@@ -3,6 +3,7 @@
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
+import CraftosaLogo from "../../components/craftosa-logo";
 import { useRouter } from "next/navigation";
 
 const API_URL =
@@ -104,19 +105,12 @@ export default function RegisterPage() {
             className="absolute inset-0 bg-cover bg-center opacity-40"
             style={{
               backgroundImage:
-                "url('https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?auto=format&fit=crop&w=1400&q=85')",
+                "url('/craftosa-hero.png')",
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#271810]/50 via-[#57311f]/40 to-[#271810]/90" />
 
-          <Link href="/" className="relative z-10 inline-flex items-center gap-3">
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e9b58e] text-xl font-bold text-[#633b29]">
-              C
-            </span>
-            <span className="text-2xl font-semibold tracking-tight">
-              craftosa<span className="text-[#e9b58e]">.</span>
-            </span>
-          </Link>
+          <CraftosaLogo href="/" light tagline className="relative z-10" />
 
           <div className="relative z-10 max-w-lg">
             <span className="inline-flex rounded-full border border-white/30 bg-white/10 px-4 py-2 text-xs tracking-widest">
@@ -142,12 +136,7 @@ export default function RegisterPage() {
 
         <section className="flex items-center justify-center px-5 py-10 sm:px-10 lg:px-12">
           <div className="w-full max-w-md">
-            <Link
-              href="/"
-              className="mb-8 inline-flex items-center gap-2 text-2xl font-bold tracking-tight text-[#8b4c35] lg:hidden"
-            >
-              Craftosa<span className="text-[#b86c4d]">.</span>
-            </Link>
+            <CraftosaLogo href="/" tagline className="mb-8 lg:hidden" />
 
             <div className="mb-8">
               <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-[#a5684e]">
