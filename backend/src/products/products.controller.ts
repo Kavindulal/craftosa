@@ -97,9 +97,16 @@ export class ProductsController {
       callback(null, true);
     },
   }))
-  async uploadProductImage(@UploadedFile() file: { buffer: Buffer; mimetype: string } | undefined) {
+  async uploadProductImage(
+    @Req() req: AuthenticatedRequest,
+    @UploadedFile() file: { buffer: Buffer; mimetype: string } | undefined,
+  ) {
     if (!file) throw new BadRequestException('Choose an image to upload.');
-    const uploaded = await this.cloudinary.uploadImage(file.buffer, file.mimetype, 'craftosa/products');
+    const uploaded = await this.cloudinary.uploadImage(
+      file.buffer,
+      file.mimetype,
+      `craftosa/products/${req.user.userId}`,
+    );
     // Keep the original response shape so the existing frontend does not break.
     return { imageUrl: uploaded.imageUrl };
   }
