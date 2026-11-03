@@ -15,9 +15,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { mkdirSync } from 'node:fs';
-import { extname, join } from 'node:path';
+import { memoryStorage } from 'multer';
+import { Readable } from 'node:stream';
+import { v2 as cloudinary } from 'cloudinary';
 import { Request } from 'express';
 
 import { ProductsService } from './products.service';
@@ -87,24 +87,46 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('seller')
   @UseInterceptors(FileInterceptor('file', {
-    storage: diskStorage({
-      destination: (_req, _file, callback) => {
-        const directory = join(process.cwd(), 'uploads', 'products');
-        mkdirSync(directory, { recursive: true });
-        callback(null, directory);
-      },
-      filename: (_req, file, callback) => callback(null, Date.now() + '-' + Math.round(Math.random() * 1e9) + extname(file.originalname).toLowerCase()),
-    }),
+    storage: memoryStorage(),
     limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: (_req, file, callback) => {
       if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.mimetype)) return callback(new BadRequestException('Upload a JPG, PNG, WebP, or GIF image.'), false);
       callback(null, true);
     },
   }))
-  uploadProductImage(@UploadedFile() file: { filename: string } | undefined) {
+  async uploadProductImage(@UploadedFile() file: { buffer: Buffer; mimetype: string } | undefined) {
     if (!file) throw new BadRequestException('Choose an image to upload.');
-    const baseUrl = process.env.PUBLIC_API_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:3001';
-    return { imageUrl: baseUrl.replace(/\/$/, '') + '/uploads/products/' + file.filename };
+
+    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+    const apiKey = process.env.CLOUDINARY_API_KEY;
+    const apiSecret = process.env.CLOUDINARY_API_SECRET;
+    if (!cloudName || !apiKey || !apiSecret) {
+      throw new BadRequestException('Image storage is not configured. Please contact the administrator.');
+    }
+
+    const timestamp = Math.floor(Date.now() / 1000);
+    const folder = 'craftosa/products';
+    const signatureBase = `folder=${folder}&timestamp=${timestamp}${apiSecret}`;
+    const { createHash } = await import('node:crypto');
+    const signature = createHash('sha1').update(signatureBase).digest('hex');
+
+    const form = new FormData();
+    form.append('file', new Blob([file.buffer], { type: file.mimetype }), 'product-image');
+    form.append('api_key', apiKey);
+    form.append('timestamp', String(timestamp));
+    form.append('folder', folder);
+    form.append('signature', signature);
+
+    const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      method: 'POST',
+      body: form,
+    });
+    const result = await response.json() as { secure_url?: string; error?: { message?: string } };
+    if (!response.ok || !result.secure_url) {
+      throw new BadRequestException(result.error?.message || 'Could not store the product image.');
+    }
+
+    return { imageUrl: result.secure_url };
   }
   // SELLER ONLY: Create a product.
   @Post()
