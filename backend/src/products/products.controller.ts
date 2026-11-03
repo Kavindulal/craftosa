@@ -16,9 +16,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
-import { Readable } from 'node:stream';
-import { v2 as cloudinary } from 'cloudinary';
 import { Request } from 'express';
+import { createHash } from 'node:crypto';
 
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -107,11 +106,10 @@ export class ProductsController {
     const timestamp = Math.floor(Date.now() / 1000);
     const folder = 'craftosa/products';
     const signatureBase = `folder=${folder}&timestamp=${timestamp}${apiSecret}`;
-    const { createHash } = await import('node:crypto');
     const signature = createHash('sha1').update(signatureBase).digest('hex');
 
     const form = new FormData();
-    form.append('file', new Blob([file.buffer], { type: file.mimetype }), 'product-image');
+    form.append('file', new Blob([file.buffer as unknown as BlobPart], { type: file.mimetype }), 'product-image');
     form.append('api_key', apiKey);
     form.append('timestamp', String(timestamp));
     form.append('folder', folder);
