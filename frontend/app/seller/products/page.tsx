@@ -177,7 +177,7 @@ export default function MyProductsPage() {
       setSaving(false);
       return;
     }
-    const allImageUrls = [...form.imageUrls, ...uploadedUrls].filter((url, index, urls) => Boolean(url) && urls.indexOf(url) === index).slice(0, 8);
+    // Prefer newly uploaded photos so an old/broken external URL cannot remain the primary image.\n    const allImageUrls = [...uploadedUrls, ...form.imageUrls].filter((url, index, urls) => Boolean(url) && urls.indexOf(url) === index).slice(0, 8);
     const primaryImageUrl = allImageUrls[0] || form.imageUrl.trim();
     if (!primaryImageUrl) { setError("Please upload at least one product photo or add an image URL."); setSaving(false); return; }
     const payload = {
